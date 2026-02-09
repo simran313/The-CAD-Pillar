@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The CAD Pillar | Jewelry CAD &amp; Manufacturing Partner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    :root {
+      --color-bg: #FAFBFC;
+      --color-surface: #FFFFFF;
+      --color-text: #0A0E27;
+      --color-primary: #0EA5E9;
+      --color-secondary: #475569;
+    }
+    * {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .page-section {
+      display: none;
+    }
+    .page-section.active {
+      display: block;
+    }
+    .nav-link {
+      position: relative;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .nav-link:hover {
+      color: var(--color-primary);
+    }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--color-primary);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-block;
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+      letter-spacing: -0.01em;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.35);
+    }
+    .btn-secondary {
+      border: 2px solid #E2E8F0;
+      color: var(--color-text);
+      padding: 13px 31px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-block;
+      background: white;
+      letter-spacing: -0.01em;
+    }
+    .btn-secondary:hover {
+      background: var(--color-text);
+      border-color: var(--color-text);
+      color: white;
+      transform: translateY(-2px);
+    }
+    .card {
+      background: var(--color-surface);
+      border: 1px solid #E5E7EB;
+      border-radius: 20px;
+      padding: 40px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 100%;
+    }
+    .card:hover {
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+      transform: translateY(-8px);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      min-width: 260px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      border-radius: 12px;
+      padding: 12px;
+      z-index: 100;
+      margin-top: 8px;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    .dropdown-item {
+      padding: 12px 16px;
+      display: block;
+      color: var(--color-text);
+      transition: all 0.2s;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+    .dropdown-item:hover {
+      background: #F1F5F9;
+      color: var(--color-primary);
+    }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      z-index: 99;
+      max-height: calc(100% - 80px);
+      overflow-y: auto;
+    }
+    .mobile-menu.open {
+      display: block;
+    }
+    @media (max-width: 1024px) {
+      .desktop-nav {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: block;
+      }
+    }
+    @media (min-width: 1025px) {
+      .mobile-menu-btn {
+        display: none;
+      }
+    }
+    .stat-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(14, 165, 233, 0.15);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full" style="background-color: var(--color-bg);">
+  <div id="app-wrapper" class="h-full w-full overflow-auto"><!-- Header -->
+   <header style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #E5E7EB; position: sticky; top: 0; z-index: 50; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 20px 48px; display: flex; align-items: center; justify-content: space-between;">
+     <div style="display: flex; align-items: center; cursor: pointer;" onclick="navigateTo('home')"><span id="header-company-name" class="font-display" style="font-weight: 700; font-size: 24px; color: var(--color-text); letter-spacing: -0.02em;">The CAD Pillar</span>
+     </div>
+     <nav class="desktop-nav" style="display: flex; align-items: center; gap: 40px;"><a class="nav-link" onclick="navigateTo('home')" style="cursor: pointer; color: var(--color-text); text-decoration: none; font-size: 15px;">Home</a>
+      <div class="dropdown"><a class="nav-link" style="cursor: pointer; color: var(--color-text); text-decoration: none; font-size: 15px; display: flex; align-items: center; gap: 4px;"> Services 
+        <svg width="14" height="14" viewbox="0 0 12 12" fill="currentColor">
+         <path d="M3 4.5L6 7.5L9 4.5H3Z" />
+        </svg></a>
+       <div class="dropdown-content"><a class="dropdown-item" onclick="navigateTo('cad-services')" style="font-size: 14px; cursor: pointer;">Jewelry CAD Services</a> <a class="dropdown-item" onclick="navigateTo('cad-retainers')" style="font-size: 14px; cursor: pointer;">CAD Retainers</a> <a class="dropdown-item" onclick="navigateTo('digital-assets')" style="font-size: 14px; cursor: pointer;">Digital Product Assets</a> <a class="dropdown-item" onclick="navigateTo('manufacturing')" style="font-size: 14px; cursor: pointer;">Manufacturing Services</a>
+       </div>
+      </div><a class="nav-link" onclick="navigateTo('how-we-work')" style="cursor: pointer; color: var(--color-text); text-decoration: none; font-size: 15px;">Process</a> <a class="nav-link" onclick="navigateTo('quality')" style="cursor: pointer; color: var(--color-text); text-decoration: none; font-size: 15px;">Quality</a> <a class="nav-link" onclick="navigateTo('who-we-serve')" style="cursor: pointer; color: var(--color-text); text-decoration: none; font-size: 15px;">Clients</a> <a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; text-decoration: none; font-size: 14px;">Get Started</a>
+     </nav><button class="mobile-menu-btn" onclick="toggleMobileMenu()" style="background: none; border: none; cursor: pointer; padding: 8px;">
+      <svg width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18" />
+      </svg></button>
+    </div>
+    <div id="mobile-menu" class="mobile-menu">
+     <div style="display: flex; flex-direction: column; gap: 4px;"><a onclick="navigateTo('home'); closeMobileMenu();" style="padding: 14px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">Home</a> <a onclick="navigateTo('cad-services'); closeMobileMenu();" style="padding: 14px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">CAD Services</a> <a onclick="navigateTo('cad-retainers'); closeMobileMenu();" style="padding: 14px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">CAD Retainers</a> <a onclick="navigateTo('digital-assets'); closeMobileMenu();" style="padding: 14px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">Digital Assets</a> <a onclick="navigateTo('manufacturing'); closeMobileMenu();" style="padding: 14px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">Manufacturing</a> <a onclick="navigateTo('how-we-work'); closeMobileMenu();" style="padding: 14px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">Process</a> <a onclick="navigateTo('quality'); closeMobileMenu();" style="padding: 14px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">Quality</a> <a onclick="navigateTo('who-we-serve'); closeMobileMenu();" style="padding: 14px 16px; border-radius: 8px; cursor: pointer; font-weight: 500;">Clients</a> <a onclick="navigateTo('contact'); closeMobileMenu();" class="btn-primary" style="text-align: center; margin-top: 12px; cursor: pointer;">Get Started</a>
+     </div>
+    </div>
+   </header><!-- HOME PAGE -->
+   <section id="page-home" class="page-section active"><!-- Hero -->
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 50%, #F0F9FF 100%); padding: 140px 48px 120px; position: relative; overflow: hidden;">
+     <div style="position: absolute; top: 0; right: 0; width: 600px; height: 600px; background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 70%); border-radius: 50%;"></div>
+     <div style="max-width: 1100px; margin: 0 auto; text-align: center; position: relative; z-index: 1;">
+      <div style="display: inline-block; background: rgba(14, 165, 233, 0.12); padding: 10px 24px; border-radius: 100px; margin-bottom: 32px; border: 1px solid rgba(14, 165, 233, 0.2);">
+       <p style="color: #0284C7; font-size: 13px; font-weight: 700; letter-spacing: 1px; margin: 0; text-transform: uppercase;">Trade Partner</p>
+      </div>
+      <h1 id="hero-headline" class="font-display" style="font-size: clamp(48px, 7vw, 72px); color: var(--color-text); line-height: 1.1; margin-bottom: 32px; font-weight: 800; letter-spacing: -0.03em;">Your Long-Term Jewelry CAD &amp; Manufacturing Partner</h1>
+      <p id="hero-subheadline" style="font-size: 22px; color: var(--color-secondary); line-height: 1.65; margin-bottom: 56px; max-width: 820px; margin-left: auto; margin-right: auto; font-weight: 400;">Supporting US and Australian brands from design to production. Manufacturing-ready CAD, digital assets, and white-label manufacturing.</p>
+      <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 80px;"><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; font-size: 16px; padding: 18px 40px;">Start a Conversation</a> <a class="btn-secondary" onclick="navigateTo('how-we-work')" style="cursor: pointer; font-size: 16px; padding: 17px 39px;">See Our Process</a>
+      </div><!-- Stats -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px; max-width: 900px; margin: 0 auto;">
+       <div class="stat-card">
+        <p style="font-size: 42px; font-weight: 800; color: var(--color-primary); margin-bottom: 8px; letter-spacing: -0.02em;">2</p>
+        <p style="color: var(--color-secondary); font-size: 15px; font-weight: 600;">Markets Served</p>
+        <p style="color: var(--color-secondary); font-size: 13px; margin-top: 4px;">USA &amp; Australia</p>
+       </div>
+       <div class="stat-card">
+        <p style="font-size: 42px; font-weight: 800; color: var(--color-primary); margin-bottom: 8px; letter-spacing: -0.02em;">NDA</p>
+        <p style="color: var(--color-secondary); font-size: 15px; font-weight: 600;">Protected</p>
+        <p style="color: var(--color-secondary); font-size: 13px; margin-top: 4px;">Confidential Operations</p>
+       </div>
+       <div class="stat-card">
+        <p style="font-size: 42px; font-weight: 800; color: var(--color-primary); margin-bottom: 8px; letter-spacing: -0.02em;">∞</p>
+        <p style="color: var(--color-secondary); font-size: 15px; font-weight: 600;">Trade Only</p>
+        <p style="color: var(--color-secondary); font-size: 13px; margin-top: 4px;">Long-term Partners</p>
+       </div>
+       <div class="stat-card">
+        <p style="font-size: 42px; font-weight: 800; color: var(--color-primary); margin-bottom: 8px; letter-spacing: -0.02em;">24/7</p>
+        <p style="color: var(--color-secondary); font-size: 15px; font-weight: 600;">Production</p>
+        <p style="color: var(--color-secondary); font-size: 13px; margin-top: 4px;">Global Capacity</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Services Grid -->
+    <div style="padding: 120px 48px; background: var(--color-bg);">
+     <div style="max-width: 1400px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 80px;">
+       <h2 class="font-display" style="font-size: clamp(40px, 5vw, 56px); color: var(--color-text); margin-bottom: 24px; font-weight: 800; letter-spacing: -0.02em;">End-to-End Production Support</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; margin-bottom: 64px;">
+       <div class="card" onclick="navigateTo('cad-services')" style="cursor: pointer;">
+        <div style="width: 72px; height: 72px; background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px;">
+         <svg width="36" height="36" viewbox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+         </svg>
+        </div>
+        <h3 class="font-display" style="font-size: 24px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; letter-spacing: -0.01em;">Jewelry CAD Services</h3>
+        <p style="color: var(--color-secondary); line-height: 1.7; font-size: 16px; margin-bottom: 24px;">Manufacturing-ready 3D CAD design for fine jewelry.</p><span style="color: var(--color-primary); font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;"> Learn more 
+         <svg width="16" height="16" viewbox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5" />
+         </svg></span>
+       </div>
+       <div class="card" onclick="navigateTo('cad-retainers')" style="cursor: pointer;">
+        <div style="width: 72px; height: 72px; background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px;">
+         <svg width="36" height="36" viewbox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" /> <path d="M16 2v4M8 2v4M3 10h18" />
+         </svg>
+        </div>
+        <h3 class="font-display" style="font-size: 24px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; letter-spacing: -0.01em;">CAD Retainers</h3>
+        <p style="color: var(--color-secondary); line-height: 1.7; font-size: 16px; margin-bottom: 24px;">Dedicated monthly CAD capacity for ongoing needs.</p><span style="color: var(--color-primary); font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;"> Learn more 
+         <svg width="16" height="16" viewbox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5" />
+         </svg></span>
+       </div>
+       <div class="card" onclick="navigateTo('digital-assets')" style="cursor: pointer;">
+        <div style="width: 72px; height: 72px; background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px;">
+         <svg width="36" height="36" viewbox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" /> <circle cx="8.5" cy="8.5" r="1.5" /> <path d="M21 15l-5-5L5 21" />
+         </svg>
+        </div>
+        <h3 class="font-display" style="font-size: 24px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; letter-spacing: -0.01em;">Digital Product Assets</h3>
+        <p style="color: var(--color-secondary); line-height: 1.7; font-size: 16px; margin-bottom: 24px;">Photorealistic renders and 360° product spins.</p><span style="color: var(--color-primary); font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;"> Learn more 
+         <svg width="16" height="16" viewbox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5" />
+         </svg></span>
+       </div>
+       <div class="card" onclick="navigateTo('manufacturing')" style="cursor: pointer;">
+        <div style="width: 72px; height: 72px; background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 28px;">
+         <svg width="36" height="36" viewbox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2.5"><path d="M2 20h20M4 20V10l8-6 8 6v10M9 20v-6h6v6" />
+         </svg>
+        </div>
+        <h3 class="font-display" style="font-size: 24px; font-weight: 700; color: var(--color-text); margin-bottom: 16px; letter-spacing: -0.01em;">Manufacturing Services</h3>
+        <p style="color: var(--color-secondary); line-height: 1.7; font-size: 16px; margin-bottom: 24px;">White-label export production from India.</p><span style="color: var(--color-primary); font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;"> Learn more 
+         <svg width="16" height="16" viewbox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5" />
+         </svg></span>
+       </div>
+      </div>
+     </div>
+    </div><!-- CTA Section -->
+    <div style="padding: 100px 48px; background: linear-gradient(135deg, #0A0E27 0%, #1E293B 100%);">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h2 class="font-display" style="font-size: clamp(36px, 5vw, 52px); color: white; margin-bottom: 24px; font-weight: 800; letter-spacing: -0.02em;">Ready to Discuss Your Requirements?</h2>
+      <p style="color: #CBD5E1; margin-bottom: 48px; line-height: 1.75; font-size: 20px;">Let's discuss how we can support your jewelry operations.</p><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; background: white; color: var(--color-text); font-size: 18px; padding: 20px 48px;">Start a Conversation</a>
+     </div>
+    </div>
+   </section><!-- CONTACT PAGE -->
+   <section id="page-contact" class="page-section">
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); padding: 100px 48px;">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h1 class="font-display" style="font-size: clamp(40px, 6vw, 60px); color: var(--color-text); margin-bottom: 28px; font-weight: 800; letter-spacing: -0.02em;">Let's Start a Conversation</h1>
+      <p style="font-size: 20px; color: var(--color-secondary); line-height: 1.7;">Tell us about your jewelry production requirements.</p>
+     </div>
+    </div>
+    <div style="padding: 80px 48px; background: var(--color-surface);">
+     <div style="max-width: 900px; margin: 0 auto;">
+      <form id="contact-form" onsubmit="handleFormSubmit(event)"><!-- Company Information -->
+       <div style="background: #F8FAFC; border-radius: 20px; padding: 48px; margin-bottom: 32px;">
+        <h2 class="font-display" style="font-size: 28px; font-weight: 700; color: var(--color-text); margin-bottom: 32px;">Company Information</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+         <div><label for="company-name" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Company Name *</label> <input type="text" id="company-name" required style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;">
+         </div>
+         <div><label for="industry" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Industry Type *</label> <select id="industry" required style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;"> <option value="">Select industry</option> <option value="manufacturer">Jewelry Manufacturer</option> <option value="brand">Fine Jewelry Brand</option> <option value="dtc">DTC E-commerce Brand</option> <option value="wholesaler">Wholesaler/Distributor</option> <option value="private-label">Private Label Supplier</option> <option value="retail">Retail Jewelry Store</option> <option value="other">Other</option> </select>
+         </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+         <div><label for="market" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Primary Market *</label> <select id="market" required style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;"> <option value="">Select market</option> <option value="usa">United States</option> <option value="australia">Australia</option> <option value="both">Both USA &amp; Australia</option> </select>
+         </div>
+         <div><label for="website" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Company Website</label> <input type="url" id="website" placeholder="https://" style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;">
+         </div>
+        </div>
+       </div><!-- Contact Person -->
+       <div style="background: #F8FAFC; border-radius: 20px; padding: 48px; margin-bottom: 32px;">
+        <h2 class="font-display" style="font-size: 28px; font-weight: 700; color: var(--color-text); margin-bottom: 32px;">Contact Person</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+         <div><label for="first-name" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">First Name *</label> <input type="text" id="first-name" required style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;">
+         </div>
+         <div><label for="last-name" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Last Name *</label> <input type="text" id="last-name" required style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;">
+         </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+         <div><label for="email" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Email Address *</label> <input type="email" id="email" required style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;">
+         </div>
+         <div><label for="phone" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Phone Number *</label> <input type="tel" id="phone" required style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;">
+         </div>
+        </div>
+        <div><label for="role" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Your Role *</label> <input type="text" id="role" placeholder="e.g., Production Manager, Owner, Creative Director" required style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;">
+        </div>
+       </div><!-- Services Needed -->
+       <div style="background: #F8FAFC; border-radius: 20px; padding: 48px; margin-bottom: 32px;">
+        <h2 class="font-display" style="font-size: 28px; font-weight: 700; color: var(--color-text); margin-bottom: 16px;">Services Needed *</h2>
+        <p style="color: var(--color-secondary); margin-bottom: 24px; font-size: 15px;">Select all services you're interested in</p>
+        <div style="display: grid; gap: 16px;"><label style="display: flex; align-items: center; padding: 16px; background: white; border: 2px solid #E2E8F0; border-radius: 12px; cursor: pointer;"> <input type="checkbox" name="services" value="cad-services" style="width: 20px; height: 20px; margin-right: 16px; cursor: pointer;">
+          <div><span style="font-weight: 600; color: var(--color-text); font-size: 16px; display: block; margin-bottom: 4px;">Jewelry CAD Services</span> <span style="color: var(--color-secondary); font-size: 14px;">Manufacturing-ready 3D CAD design</span>
+          </div></label> <label style="display: flex; align-items: center; padding: 16px; background: white; border: 2px solid #E2E8F0; border-radius: 12px; cursor: pointer;"> <input type="checkbox" name="services" value="cad-retainers" style="width: 20px; height: 20px; margin-right: 16px; cursor: pointer;">
+          <div><span style="font-weight: 600; color: var(--color-text); font-size: 16px; display: block; margin-bottom: 4px;">CAD Retainers</span> <span style="color: var(--color-secondary); font-size: 14px;">Dedicated monthly CAD capacity</span>
+          </div></label> <label style="display: flex; align-items: center; padding: 16px; background: white; border: 2px solid #E2E8F0; border-radius: 12px; cursor: pointer;"> <input type="checkbox" name="services" value="digital-assets" style="width: 20px; height: 20px; margin-right: 16px; cursor: pointer;">
+          <div><span style="font-weight: 600; color: var(--color-text); font-size: 16px; display: block; margin-bottom: 4px;">Digital Product Assets</span> <span style="color: var(--color-secondary); font-size: 14px;">Renders, 360° spins, on-model visuals</span>
+          </div></label> <label style="display: flex; align-items: center; padding: 16px; background: white; border: 2px solid #E2E8F0; border-radius: 12px; cursor: pointer;"> <input type="checkbox" name="services" value="manufacturing" style="width: 20px; height: 20px; margin-right: 16px; cursor: pointer;">
+          <div><span style="font-weight: 600; color: var(--color-text); font-size: 16px; display: block; margin-bottom: 4px;">Manufacturing Services</span> <span style="color: var(--color-secondary); font-size: 14px;">White-label export production</span>
+          </div></label>
+        </div>
+       </div><!-- Project Details -->
+       <div style="background: #F8FAFC; border-radius: 20px; padding: 48px; margin-bottom: 32px;">
+        <h2 class="font-display" style="font-size: 28px; font-weight: 700; color: var(--color-text); margin-bottom: 32px;">Project Details</h2>
+        <div style="margin-bottom: 24px;"><label for="budget" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Estimated Monthly Budget</label> <select id="budget" style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;"> <option value="">Select budget range</option> <option value="under-5k">Under $5,000</option> <option value="5k-10k">$5,000 - $10,000</option> <option value="10k-25k">$10,000 - $25,000</option> <option value="25k-50k">$25,000 - $50,000</option> <option value="50k-plus">$50,000+</option> <option value="tbd">To Be Discussed</option> </select>
+        </div>
+        <div style="margin-bottom: 24px;"><label for="timeline" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Project Timeline</label> <select id="timeline" style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;"> <option value="">Select timeline</option> <option value="urgent">Urgent (within 2 weeks)</option> <option value="1-month">1 Month</option> <option value="2-3-months">2-3 Months</option> <option value="3-6-months">3-6 Months</option> <option value="ongoing">Ongoing Partnership</option> <option value="flexible">Flexible</option> </select>
+        </div>
+        <div style="margin-bottom: 24px;"><label for="volume" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Expected Production Volume</label> <input type="text" id="volume" placeholder="e.g., 100 pieces/month, 500 units per design" style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px;">
+        </div>
+        <div><label for="message" style="display: block; font-weight: 600; color: var(--color-text); margin-bottom: 8px; font-size: 15px;">Project Description *</label> <textarea id="message" rows="6" required placeholder="Tell us about your project requirements..." style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 15px; font-family: inherit; resize: vertical;"></textarea>
+        </div>
+       </div><button type="submit" id="submit-btn" class="btn-primary" style="width: 100%; font-size: 18px; padding: 20px; cursor: pointer;">Submit Inquiry</button>
+      </form><!-- Success Message -->
+      <div id="form-success" style="display: none; text-align: center; padding: 80px 40px;">
+       <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 32px;">
+        <svg width="40" height="40" viewbox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="3"><path d="M20 6L9 17l-5-5" />
+        </svg>
+       </div>
+       <h2 class="font-display" style="font-size: 36px; font-weight: 800; color: var(--color-text); margin-bottom: 20px;">Thank You!</h2>
+       <p style="color: var(--color-secondary); font-size: 18px; line-height: 1.7; margin-bottom: 40px;">We've received your inquiry and will respond within 24 hours.</p><a class="btn-primary" onclick="navigateTo('home')" style="cursor: pointer; font-size: 16px;">Return to Home</a>
+      </div>
+     </div>
+    </div>
+   </section><!-- CAD SERVICES PAGE -->
+   <section id="page-cad-services" class="page-section">
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); padding: 100px 48px;">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h1 class="font-display" style="font-size: clamp(40px, 6vw, 60px); color: var(--color-text); margin-bottom: 28px; font-weight: 800; letter-spacing: -0.02em;">Jewelry CAD Services</h1>
+      <p style="font-size: 20px; color: var(--color-secondary); line-height: 1.7;">Manufacturing-ready 3D CAD design for fine jewelry production.</p>
+     </div>
+    </div>
+    <div style="padding: 80px 48px; background: var(--color-surface); text-align: center;">
+     <div style="max-width: 800px; margin: 0 auto;">
+      <p style="color: var(--color-secondary); font-size: 18px; line-height: 1.8; margin-bottom: 40px;">Every file is engineered for the factory floor with proper tolerances, stone setting logic, and production specifications.</p><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; font-size: 16px;">Request CAD Information</a>
+     </div>
+    </div>
+   </section><!-- CAD RETAINERS PAGE -->
+   <section id="page-cad-retainers" class="page-section">
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); padding: 100px 48px;">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h1 class="font-display" style="font-size: clamp(40px, 6vw, 60px); color: var(--color-text); margin-bottom: 28px; font-weight: 800; letter-spacing: -0.02em;">CAD Retainers</h1>
+      <p style="font-size: 20px; color: var(--color-secondary); line-height: 1.7;">Dedicated monthly CAD capacity for brands with ongoing design needs.</p>
+     </div>
+    </div>
+    <div style="padding: 80px 48px; background: var(--color-surface); text-align: center;">
+     <div style="max-width: 800px; margin: 0 auto;">
+      <p style="color: var(--color-secondary); font-size: 18px; line-height: 1.8; margin-bottom: 40px;">Predictable output, priority scheduling, and consistent quality across all collections.</p><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; font-size: 16px;">Discuss Retainer Options</a>
+     </div>
+    </div>
+   </section><!-- DIGITAL ASSETS PAGE -->
+   <section id="page-digital-assets" class="page-section">
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); padding: 100px 48px;">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h1 class="font-display" style="font-size: clamp(40px, 6vw, 60px); color: var(--color-text); margin-bottom: 28px; font-weight: 800; letter-spacing: -0.02em;">Digital Product Assets</h1>
+      <p style="font-size: 20px; color: var(--color-secondary); line-height: 1.7;">Photorealistic renders, 360° spins, and on-model visuals from production CAD.</p>
+     </div>
+    </div>
+    <div style="padding: 80px 48px; background: var(--color-surface); text-align: center;">
+     <div style="max-width: 800px; margin: 0 auto;">
+      <p style="color: var(--color-secondary); font-size: 18px; line-height: 1.8; margin-bottom: 40px;">Market your products before physical samples exist with CAD-derived visuals.</p><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; font-size: 16px;">Learn About Digital Assets</a>
+     </div>
+    </div>
+   </section><!-- MANUFACTURING PAGE -->
+   <section id="page-manufacturing" class="page-section">
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); padding: 100px 48px;">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h1 class="font-display" style="font-size: clamp(40px, 6vw, 60px); color: var(--color-text); margin-bottom: 28px; font-weight: 800; letter-spacing: -0.02em;">Manufacturing Services</h1>
+      <p style="font-size: 20px; color: var(--color-secondary); line-height: 1.7;">White-label export production from India with full NDA protection.</p>
+     </div>
+    </div>
+    <div style="padding: 80px 48px; background: var(--color-surface); text-align: center;">
+     <div style="max-width: 800px; margin: 0 auto;">
+      <p style="color: var(--color-secondary); font-size: 18px; line-height: 1.8; margin-bottom: 40px;">Diamond &amp; gemstone sourcing, quality control, and direct shipment to USA &amp; Australia.</p><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; font-size: 16px;">Discuss Manufacturing</a>
+     </div>
+    </div>
+   </section><!-- HOW WE WORK PAGE -->
+   <section id="page-how-we-work" class="page-section">
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); padding: 100px 48px;">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h1 class="font-display" style="font-size: clamp(40px, 6vw, 60px); color: var(--color-text); margin-bottom: 28px; font-weight: 800; letter-spacing: -0.02em;">How We Work</h1>
+      <p style="font-size: 20px; color: var(--color-secondary); line-height: 1.7;">Our streamlined process for CAD design and manufacturing partnerships.</p>
+     </div>
+    </div>
+    <div style="padding: 80px 48px; background: var(--color-surface); text-align: center;">
+     <div style="max-width: 800px; margin: 0 auto;">
+      <p style="color: var(--color-secondary); font-size: 18px; line-height: 1.8; margin-bottom: 40px;">From initial consultation to final delivery, we provide transparent communication and predictable timelines.</p><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; font-size: 16px;">Start Your Project</a>
+     </div>
+    </div>
+   </section><!-- QUALITY PAGE -->
+   <section id="page-quality" class="page-section">
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); padding: 100px 48px;">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h1 class="font-display" style="font-size: clamp(40px, 6vw, 60px); color: var(--color-text); margin-bottom: 28px; font-weight: 800; letter-spacing: -0.02em;">Quality &amp; Standards</h1>
+      <p style="font-size: 20px; color: var(--color-secondary); line-height: 1.7;">Manufacturing specifications and quality control processes.</p>
+     </div>
+    </div>
+    <div style="padding: 80px 48px; background: var(--color-surface); text-align: center;">
+     <div style="max-width: 800px; margin: 0 auto;">
+      <p style="color: var(--color-secondary); font-size: 18px; line-height: 1.8; margin-bottom: 40px;">Every CAD file and manufactured piece meets strict quality standards for successful production.</p><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; font-size: 16px;">Discuss Quality Standards</a>
+     </div>
+    </div>
+   </section><!-- WHO WE SERVE PAGE -->
+   <section id="page-who-we-serve" class="page-section">
+    <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); padding: 100px 48px;">
+     <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+      <h1 class="font-display" style="font-size: clamp(40px, 6vw, 60px); color: var(--color-text); margin-bottom: 28px; font-weight: 800; letter-spacing: -0.02em;">Who We Serve</h1>
+      <p style="font-size: 20px; color: var(--color-secondary); line-height: 1.7;">Trade partners in the USA and Australia jewelry industry.</p>
+     </div>
+    </div>
+    <div style="padding: 80px 48px; background: var(--color-surface);">
+     <div style="max-width: 1200px; margin: 0 auto;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; margin-bottom: 60px;">
+       <div class="card">
+        <h3 class="font-display" style="font-size: 22px; font-weight: 700; color: var(--color-text); margin-bottom: 16px;">US Manufacturers</h3>
+        <p style="color: var(--color-secondary); line-height: 1.7; font-size: 15px;">Domestic manufacturers needing CAD capacity or offshore production support.</p>
+       </div>
+       <div class="card">
+        <h3 class="font-display" style="font-size: 22px; font-weight: 700; color: var(--color-text); margin-bottom: 16px;">Fine Jewelry Brands</h3>
+        <p style="color: var(--color-secondary); line-height: 1.7; font-size: 15px;">Established brands requiring manufacturing-ready CAD and consistent production.</p>
+       </div>
+       <div class="card">
+        <h3 class="font-display" style="font-size: 22px; font-weight: 700; color: var(--color-text); margin-bottom: 16px;">DTC E-commerce</h3>
+        <p style="color: var(--color-secondary); line-height: 1.7; font-size: 15px;">Direct-to-consumer brands needing CAD-derived assets and scalable manufacturing.</p>
+       </div>
+      </div>
+      <div style="text-align: center;"><a class="btn-primary" onclick="navigateTo('contact')" style="cursor: pointer; font-size: 16px;">Become a Partner</a>
+      </div>
+     </div>
+    </div>
+   </section><!-- Footer -->
+   <footer style="background: linear-gradient(135deg, #0A0E27 0%, #1E293B 100%); padding: 80px 48px 40px;">
+    <div style="max-width: 1400px; margin: 0 auto;">
+     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 64px; margin-bottom: 64px;">
+      <div><span id="footer-company-name" class="font-display" style="font-weight: 800; font-size: 24px; color: white; letter-spacing: -0.02em;">The CAD Pillar</span>
+       <p style="color: #94A3B8; font-size: 16px; line-height: 1.7; margin-top: 24px;">Your long-term jewelry CAD and manufacturing partner.</p>
+      </div>
+      <div>
+       <h4 style="color: white; font-weight: 700; margin-bottom: 24px; font-size: 16px;">Services</h4>
+       <ul style="list-style: none; padding: 0;">
+        <li><a onclick="navigateTo('cad-services')" style="color: #94A3B8; text-decoration: none; font-size: 15px; display: block; padding: 8px 0; cursor: pointer;">Jewelry CAD Services</a></li>
+        <li><a onclick="navigateTo('cad-retainers')" style="color: #94A3B8; text-decoration: none; font-size: 15px; display: block; padding: 8px 0; cursor: pointer;">CAD Retainers</a></li>
+        <li><a onclick="navigateTo('digital-assets')" style="color: #94A3B8; text-decoration: none; font-size: 15px; display: block; padding: 8px 0; cursor: pointer;">Digital Assets</a></li>
+        <li><a onclick="navigateTo('manufacturing')" style="color: #94A3B8; text-decoration: none; font-size: 15px; display: block; padding: 8px 0; cursor: pointer;">Manufacturing</a></li>
+       </ul>
+      </div>
+      <div>
+       <h4 style="color: white; font-weight: 700; margin-bottom: 24px; font-size: 16px;">Company</h4>
+       <ul style="list-style: none; padding: 0;">
+        <li><a onclick="navigateTo('how-we-work')" style="color: #94A3B8; text-decoration: none; font-size: 15px; display: block; padding: 8px 0; cursor: pointer;">How We Work</a></li>
+        <li><a onclick="navigateTo('quality')" style="color: #94A3B8; text-decoration: none; font-size: 15px; display: block; padding: 8px 0; cursor: pointer;">Quality</a></li>
+        <li><a onclick="navigateTo('who-we-serve')" style="color: #94A3B8; text-decoration: none; font-size: 15px; display: block; padding: 8px 0; cursor: pointer;">Clients</a></li>
+        <li><a onclick="navigateTo('contact')" style="color: #94A3B8; text-decoration: none; font-size: 15px; display: block; padding: 8px 0; cursor: pointer;">Contact</a></li>
+       </ul>
+      </div>
+      <div>
+       <h4 style="color: white; font-weight: 700; margin-bottom: 24px; font-size: 16px;">Contact</h4>
+       <p id="contact-email-footer" style="color: #94A3B8; font-size: 15px;">info@thecadpillar.com</p>
+      </div>
+     </div>
+     <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 32px;">
+      <p style="color: #64748B; font-size: 14px; text-align: center;">© 2024 The CAD Pillar. All rights reserved.</p>
+     </div>
+    </div>
+   </footer>
+  </div>
+  <script>
+    const defaultConfig = {
+      company_name: 'The CAD Pillar',
+      hero_headline: 'Your Long-Term Jewelry CAD & Manufacturing Partner',
+      hero_subheadline: 'Supporting US and Australian brands from design to production. Manufacturing-ready CAD, digital assets, and white-label manufacturing.',
+      contact_email: 'info@thecadpillar.com'
+    };
+
+    let config = { ...defaultConfig };
+
+    function navigateTo(pageId) {
+      document.querySelectorAll('.page-section').forEach(page => {
+        page.classList.remove('active');
+      });
+      
+      const targetPage = document.getElementById('page-' + pageId);
+      if (targetPage) {
+        targetPage.classList.add('active');
+      }
+      
+      document.getElementById('app-wrapper').scrollTop = 0;
+      closeMobileMenu();
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('open');
+    }
+
+    function closeMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.remove('open');
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const formSuccess = document.getElementById('form-success');
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      submitBtn.style.opacity = '0.6';
+      
+      setTimeout(() => {
+        document.getElementById('contact-form').style.display = 'none';
+        formSuccess.style.display = 'block';
+      }, 1500);
+    }
+
+    async function onConfigChange(newConfig) {
+      config = { ...defaultConfig, ...newConfig };
+      
+      const headerName = document.getElementById('header-company-name');
+      if (headerName) headerName.textContent = config.company_name || defaultConfig.company_name;
+      
+      const footerName = document.getElementById('footer-company-name');
+      if (footerName) footerName.textContent = config.company_name || defaultConfig.company_name;
+      
+      const heroHeadline = document.getElementById('hero-headline');
+      if (heroHeadline) heroHeadline.textContent = config.hero_headline || defaultConfig.hero_headline;
+      
+      const heroSubheadline = document.getElementById('hero-subheadline');
+      if (heroSubheadline) heroSubheadline.textContent = config.hero_subheadline || defaultConfig.hero_subheadline;
+      
+      const contactEmailFooter = document.getElementById('contact-email-footer');
+      if (contactEmailFooter) contactEmailFooter.textContent = config.contact_email || defaultConfig.contact_email;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim() || '#FAFBFC',
+            set: (value) => {
+              document.documentElement.style.setProperty('--color-bg', value);
+              if (window.elementSdk) window.elementSdk.setConfig({ background_color: value });
+            }
+          },
+          {
+            get: () => getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF',
+            set: (value) => {
+              document.documentElement.style.setProperty('--color-surface', value);
+              if (window.elementSdk) window.elementSdk.setConfig({ surface_color: value });
+            }
+          },
+          {
+            get: () => getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim() || '#0A0E27',
+            set: (value) => {
+              document.documentElement.style.setProperty('--color-text', value);
+              if (window.elementSdk) window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#0EA5E9',
+            set: (value) => {
+              document.documentElement.style.setProperty('--color-primary', value);
+              if (window.elementSdk) window.elementSdk.setConfig({ primary_color: value });
+            }
+          },
+          {
+            get: () => getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim() || '#475569',
+            set: (value) => {
+              document.documentElement.style.setProperty('--color-secondary', value);
+              if (window.elementSdk) window.elementSdk.setConfig({ secondary_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || 'Outfit',
+          set: (value) => {
+            config.font_family = value;
+            document.body.style.fontFamily = `${value}, -apple-system, BlinkMacSystemFont, sans-serif`;
+            if (window.elementSdk) window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || 16,
+          set: (value) => {
+            config.font_size = value;
+            document.body.style.fontSize = `${value}px`;
+            if (window.elementSdk) window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ['company_name', config.company_name || defaultConfig.company_name],
+        ['hero_headline', config.hero_headline || defaultConfig.hero_headline],
+        ['hero_subheadline', config.hero_subheadline || defaultConfig.hero_subheadline],
+        ['contact_email', config.contact_email || defaultConfig.contact_email]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    onConfigChange(config);
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c196bc535c289e2',t:'MTc2OTAyNTg3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
