@@ -412,96 +412,100 @@
     </div>
    </header><!-- Main Content -->
    <main id="main-content" class="flex-1"><!-- HOME PAGE -->
-    <div id="page-home"><!-- Hero Section with CAD Quote Calculator -->
+    <div id="page-home"><!-- Hero Section -->
      <section class="gradient-hero radial-glow overflow-hidden">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
-       <div class="grid lg:grid-cols-12 gap-8 items-start"><!-- Left Content -->
-        <div class="lg:col-span-5"><!-- Badge -->
-         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-primary-start/20 mb-8">
-          <div class="w-2 h-2 rounded-full bg-primary-start animate-pulse"></div><span id="hero-badge" class="text-sm font-medium text-primary-end">Trade Partner</span>
-         </div><!-- Headline -->
-         <h1 id="hero-headline" class="font-heading font-bold text-headline text-4xl sm:text-5xl lg:text-5xl letter-tight leading-tight mb-6">Your Long-Term Jewelry CAD &amp; Manufacturing Partner</h1><!-- Subheadline -->
-         <p id="hero-subheadline" class="text-lg sm:text-xl text-secondary leading-relaxed mb-10 max-w-2xl">Supporting US and Australian brands from design to production. Manufacturing-ready CAD, digital assets, and white-label manufacturing.</p><!-- Buttons -->
-         <div class="flex flex-col sm:flex-row gap-4"><a href="#cad-quote-section" onclick="scrollToElement('cad-quote-section'); return false;" class="gradient-primary text-white px-8 py-4 rounded-lg font-semibold btn-primary shadow-lg shadow-primary-start/25 text-center"> Get Quote </a> <a href="#" onclick="scrollToSection('process'); return false;" class="bg-white text-headline px-8 py-4 rounded-lg font-semibold border-2 border-gray-200 btn-secondary text-center"> See Our Process </a>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
+       <div class="max-w-3xl"><!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-primary-start/20 mb-8">
+         <div class="w-2 h-2 rounded-full bg-primary-start animate-pulse"></div><span id="hero-badge" class="text-sm font-medium text-primary-end">Trade Partner</span>
+        </div><!-- Headline -->
+        <h1 id="hero-headline" class="font-heading font-bold text-headline text-5xl sm:text-6xl lg:text-6xl letter-tight leading-tight mb-6">Jewelry CAD &amp; Manufacturing Built for Brands</h1><!-- Subheadline -->
+        <p id="hero-subheadline" class="text-xl sm:text-2xl text-secondary leading-relaxed mb-12">Professional design, production, and fulfillment for US and Australian jewelry businesses. We scale with your brand.</p><!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4"><a href="#cad-quote-section" onclick="scrollToElement('cad-quote-section'); return false;" class="gradient-primary text-white px-8 py-4 rounded-lg font-semibold btn-primary shadow-lg shadow-primary-start/25 text-center"> Get Your Quote </a> <a href="#" onclick="scrollToSection('process'); return false;" class="bg-white text-headline px-8 py-4 rounded-lg font-semibold border-2 border-gray-200 btn-secondary text-center"> How It Works </a>
+        </div>
+       </div>
+      </div>
+     </section><!-- CAD Quote Calculator Section -->
+     <section id="cad-quote-section" class="py-16 sm:py-20 lg:py-24 bg-bg">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+       <div class="text-center mb-12">
+        <h2 class="font-heading font-bold text-headline text-3xl sm:text-4xl letter-tight mb-3">Instant CAD Pricing</h2>
+        <p class="text-lg text-secondary">Get your jewelry design quote in under 2 minutes</p>
+       </div>
+       <div id="cad-quote-calculator" class="cad-calculator-wrapper"><!-- STEP 1: PRICE CALCULATOR -->
+        <div id="calculator-step" class="cad-calculator-step active">
+         <div class="cad-calculator-container">
+          <h3 class="cad-calculator-title">Quick Quote</h3>
+          <p class="cad-calculator-subtitle">Tell us about your design</p><!-- Design Type -->
+          <div class="cad-form-group"><label for="design-type" class="cad-label">Design Type</label> <select id="design-type" class="cad-select"> <option value="">Select design type</option> <option value="ring">Ring</option> <option value="pendant">Pendant / Necklace</option> <option value="bracelet">Bracelet</option> <option value="earrings">Earrings</option> <option value="custom">Custom</option> </select>
+          </div><!-- Number of Stones -->
+          <div class="cad-form-group"><label for="stones" class="cad-label">Number of Stones</label> <select id="stones" class="cad-select"> <option value="">Select stone count</option> <option value="0-10">1-10 Stones</option> <option value="10-50">10-50 Stones</option> <option value="50-100">50-100 Stones</option> <option value="100+">100+ Stones</option> </select>
+          </div><!-- Metal Type & Tone -->
+          <div class="cad-form-group"><label for="metal" class="cad-label">Metal Type &amp; Tone</label> <select id="metal" class="cad-select"> <option value="">Select metal tone</option> <option value="white-gold">White Gold</option> <option value="yellow-gold">Yellow Gold</option> <option value="rose-gold">Rose Gold</option> <option value="platinum">Platinum</option> </select>
+          </div><!-- Delivery Speed -->
+          <div class="cad-form-group"><label for="delivery" class="cad-label">Delivery Speed</label> <select id="delivery" class="cad-select"> <option value="standard">Standard (3-5 days)</option> <option value="express">Express (48 hours)</option> </select>
+          </div><!-- Add Render Option -->
+          <div class="cad-form-group"><label class="cad-label">Add Digital Renders? (Optional)</label> <label class="cad-checkbox-group"> <input type="checkbox" id="add-render" onchange="updatePriceDisplay()"> <span>4 Images + 360° Video</span> </label>
+          </div><!-- Number of Tones for Render -->
+          <div id="tone-group" class="cad-form-group" style="display: none;"><label for="render-tones" class="cad-label">Metal Tones to Render</label> <select id="render-tones" class="cad-select" onchange="updatePriceDisplay()"> <option value="">Select number of tones</option> <option value="1">1 Tone - $50</option> <option value="3">3 Tones - $70</option> </select>
+          </div><!-- Price Display -->
+          <div class="cad-price-display">
+           <p class="cad-price-label">Your Estimated Price Range:</p>
+           <p id="price-output" class="cad-price-amount">$0 - $0</p>
+           <p id="price-breakdown" class="cad-price-breakdown"></p>
+          </div><!-- Proceed Button --> <button id="proceed-btn" class="cad-proceed-btn">Continue to Checkout</button>
          </div>
-        </div><!-- Right: CAD Quote Calculator -->
-        <div id="cad-quote-section" class="lg:col-span-7">
-         <div id="cad-quote-calculator" class="cad-calculator-wrapper"><!-- STEP 1: PRICE CALCULATOR -->
-          <div id="calculator-step" class="cad-calculator-step active">
-           <div class="cad-calculator-container">
-            <h3 class="cad-calculator-title">Get Your CAD Quote</h3>
-            <p class="cad-calculator-subtitle">Instant pricing for your jewelry design</p><!-- Design Type -->
-            <div class="cad-form-group"><label for="design-type" class="cad-label">Design Type</label> <select id="design-type" class="cad-select"> <option value="">Select design type</option> <option value="ring">Ring</option> <option value="pendant">Pendant / Necklace</option> <option value="bracelet">Bracelet</option> <option value="earrings">Earrings</option> <option value="custom">Custom</option> </select>
-            </div><!-- Number of Stones -->
-            <div class="cad-form-group"><label for="stones" class="cad-label">Number of Stones</label> <select id="stones" class="cad-select"> <option value="">Select stone count</option> <option value="0-10">1-10 Stones</option> <option value="10-50">10-50 Stones</option> <option value="50-100">50-100 Stones</option> <option value="100+">100+ Stones</option> </select>
-            </div><!-- Metal Type & Tone -->
-            <div class="cad-form-group"><label for="metal" class="cad-label">Metal Type &amp; Tone</label> <select id="metal" class="cad-select"> <option value="">Select metal tone</option> <option value="white-gold">White Gold</option> <option value="yellow-gold">Yellow Gold</option> <option value="rose-gold">Rose Gold</option> <option value="platinum">Platinum</option> </select>
-            </div><!-- Delivery Speed -->
-            <div class="cad-form-group"><label for="delivery" class="cad-label">Delivery Speed</label> <select id="delivery" class="cad-select"> <option value="standard">Standard (3-5 days)</option> <option value="express">Express (48 hours)</option> </select>
-            </div><!-- Add Render Option -->
-            <div class="cad-form-group"><label class="cad-label">Add Digital Renders? (Optional)</label> <label class="cad-checkbox-group"> <input type="checkbox" id="add-render" onchange="updatePriceDisplay()"> <span>4 Images + 360° Video</span> </label>
-            </div><!-- Number of Tones for Render -->
-            <div id="tone-group" class="cad-form-group" style="display: none;"><label for="render-tones" class="cad-label">Metal Tones to Render</label> <select id="render-tones" class="cad-select" onchange="updatePriceDisplay()"> <option value="">Select number of tones</option> <option value="1">1 Tone - $50</option> <option value="3">3 Tones - $70</option> </select>
-            </div><!-- Price Display -->
-            <div class="cad-price-display">
-             <p class="cad-price-label">Estimated CAD Price Range:</p>
-             <p id="price-output" class="cad-price-amount">$0 - $0</p>
-             <p id="price-breakdown" class="cad-price-breakdown"></p>
-            </div><!-- Proceed Button --> <button id="proceed-btn" class="cad-proceed-btn">Proceed to Details</button>
-           </div>
-          </div><!-- STEP 2: CLIENT DETAILS -->
-          <div id="details-step" class="cad-calculator-step">
-           <div class="cad-calculator-container">
-            <h3 class="cad-calculator-title">Your Details</h3>
-            <p class="cad-calculator-subtitle">Help us process your CAD quote</p>
-            <div class="cad-form-group"><label for="full-name" class="cad-label">Full Name *</label> <input type="text" id="full-name" class="cad-input" placeholder="Your name" required>
-            </div>
-            <div class="cad-form-group"><label for="email-address" class="cad-label">Email Address *</label> <input type="email" id="email-address" class="cad-input" placeholder="your@email.com" required>
-            </div>
-            <div class="cad-form-group"><label for="phone-number" class="cad-label">Phone Number *</label> <input type="tel" id="phone-number" class="cad-input" placeholder="+1 (555) 000-0000" required>
-            </div>
-            <div class="cad-form-group"><label for="reference-image" class="cad-label">Upload Reference Image *</label> <input type="file" id="reference-image" class="cad-file-input" accept="image/*" required>
-             <p class="cad-file-help">Supported: JPG, PNG, GIF (Max 5MB)</p>
-            </div>
-            <div id="validation-error" class="cad-error-message"></div>
-            <div class="cad-button-group"><button id="back-to-calc-btn" class="cad-back-btn">Back</button> <button id="submit-details-btn" class="cad-submit-btn">Send OTP</button>
-            </div>
-           </div>
-          </div><!-- STEP 3: OTP VERIFICATION -->
-          <div id="otp-step" class="cad-calculator-step">
-           <div class="cad-calculator-container">
-            <h3 class="cad-calculator-title">Verify Your Email</h3>
-            <p class="cad-calculator-subtitle">We've sent a 6-digit OTP to your email</p>
-            <div class="cad-otp-confirmation">
-             <p id="otp-email-display">Verification code sent to: <strong></strong></p>
-            </div>
-            <div class="cad-form-group"><label for="otp-input" class="cad-label">Enter OTP Code</label> <input type="text" id="otp-input" class="cad-input" placeholder="000000" maxlength="6">
-            </div>
-            <div id="otp-error" class="cad-error-message"></div>
-            <p class="cad-resend-text">Didn't receive code? <a href="#" id="resend-otp-link" class="cad-link">Resend OTP</a></p>
-            <div class="cad-button-group"><button id="verify-otp-btn" class="cad-submit-btn">Verify &amp; Continue</button>
-            </div>
-           </div>
-          </div><!-- STEP 4: PAYMENT -->
-          <div id="payment-step" class="cad-calculator-step">
-           <div class="cad-calculator-container">
-            <h3 class="cad-calculator-title">Payment Confirmation</h3>
-            <p class="cad-calculator-subtitle">Complete your CAD quote payment</p>
-            <div class="cad-quote-summary">
-             <div class="cad-summary-row"><span class="cad-summary-label">Estimated CAD Price Range:</span> <span id="final-price" class="cad-summary-value">$0 - $0</span>
-             </div>
-             <div class="cad-summary-row"><span class="cad-summary-label">Client Email:</span> <span id="final-email" class="cad-summary-value"></span>
-             </div>
-            </div><button id="paypal-btn" class="cad-paypal-btn">Pay with PayPal</button>
-            <p class="cad-restart-text"><a href="#" id="restart-calculator-link" class="cad-link">Start Over</a></p>
-           </div>
+        </div><!-- STEP 2: CLIENT DETAILS -->
+        <div id="details-step" class="cad-calculator-step">
+         <div class="cad-calculator-container">
+          <h3 class="cad-calculator-title">Your Information</h3>
+          <p class="cad-calculator-subtitle">We'll contact you within 24 hours</p>
+          <div class="cad-form-group"><label for="full-name" class="cad-label">Full Name *</label> <input type="text" id="full-name" class="cad-input" placeholder="Your name" required>
           </div>
+          <div class="cad-form-group"><label for="email-address" class="cad-label">Email Address *</label> <input type="email" id="email-address" class="cad-input" placeholder="your@email.com" required>
+          </div>
+          <div class="cad-form-group"><label for="phone-number" class="cad-label">Phone Number *</label> <input type="tel" id="phone-number" class="cad-input" placeholder="+1 (555) 000-0000" required>
+          </div>
+          <div class="cad-form-group"><label for="reference-image" class="cad-label">Upload Reference Image *</label> <input type="file" id="reference-image" class="cad-file-input" accept="image/*" required>
+           <p class="cad-file-help">JPG, PNG, GIF (Max 5MB)</p>
+          </div>
+          <div id="validation-error" class="cad-error-message"></div>
+          <div class="cad-button-group"><button id="back-to-calc-btn" class="cad-back-btn">Back</button> <button id="submit-details-btn" class="cad-submit-btn">Send OTP</button>
+          </div>
+         </div>
+        </div><!-- STEP 3: OTP VERIFICATION -->
+        <div id="otp-step" class="cad-calculator-step">
+         <div class="cad-calculator-container">
+          <h3 class="cad-calculator-title">Verify Your Email</h3>
+          <p class="cad-calculator-subtitle">Check your inbox for the code</p>
+          <div class="cad-otp-confirmation">
+           <p id="otp-email-display">Verification code sent to: <strong></strong></p>
+          </div>
+          <div class="cad-form-group"><label for="otp-input" class="cad-label">Enter OTP Code</label> <input type="text" id="otp-input" class="cad-input" placeholder="000000" maxlength="6">
+          </div>
+          <div id="otp-error" class="cad-error-message"></div>
+          <p class="cad-resend-text">Didn't receive code? <a href="#" id="resend-otp-link" class="cad-link">Resend OTP</a></p>
+          <div class="cad-button-group"><button id="verify-otp-btn" class="cad-submit-btn">Verify &amp; Continue</button>
+          </div>
+         </div>
+        </div><!-- STEP 4: PAYMENT -->
+        <div id="payment-step" class="cad-calculator-step">
+         <div class="cad-calculator-container">
+          <h3 class="cad-calculator-title">Confirm &amp; Pay</h3>
+          <p class="cad-calculator-subtitle">Complete your order</p>
+          <div class="cad-quote-summary">
+           <div class="cad-summary-row"><span class="cad-summary-label">Price Range:</span> <span id="final-price" class="cad-summary-value">$0 - $0</span>
+           </div>
+           <div class="cad-summary-row"><span class="cad-summary-label">Confirmation Email:</span> <span id="final-email" class="cad-summary-value"></span>
+           </div>
+          </div><button id="paypal-btn" class="cad-paypal-btn">Pay with PayPal</button>
+          <p class="cad-restart-text"><a href="#" id="restart-calculator-link" class="cad-link">Start Over</a></p>
          </div>
         </div>
        </div>
       </div>
      </section><!-- Stats Section -->
-     <section class="py-16 sm:py-20 bg-bg">
+     <section class="py-16 sm:py-20 bg-surface">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div class="glass-card rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover text-center">
@@ -551,50 +555,50 @@
        </div>
       </div>
      </section><!-- Services Grid -->
-     <section class="py-16 sm:py-20 lg:py-24 bg-surface">
+     <section class="py-16 sm:py-20 lg:py-24 bg-bg">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
        <div class="text-center mb-12 lg:mb-16">
-        <h2 class="font-heading font-bold text-headline text-3xl sm:text-4xl lg:text-5xl letter-tight mb-4">End-to-End Production Support</h2>
-        <p class="text-lg text-secondary max-w-2xl mx-auto">Comprehensive services designed for professional jewelry brands</p>
+        <h2 class="font-heading font-bold text-headline text-3xl sm:text-4xl lg:text-5xl letter-tight mb-4">Complete Production Support</h2>
+        <p class="text-lg text-secondary max-w-2xl mx-auto">From concept to delivery—everything your jewelry brand needs</p>
        </div>
        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-bg rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover group">
+        <div class="bg-surface rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover group">
          <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
          </div>
          <h3 class="font-heading font-bold text-headline text-lg mb-3">Jewelry CAD Services</h3>
-         <p class="text-secondary text-sm leading-relaxed mb-4">Manufacturing-ready 3D CAD design for fine jewelry.</p><a href="#" onclick="navigateTo('services-cad'); return false;" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-start hover:text-primary-end transition-colors"> Learn more 
+         <p class="text-secondary text-sm leading-relaxed mb-4">Manufacturing-ready 3D design for any jewelry type.</p><a href="#" onclick="navigateTo('services-cad'); return false;" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-start hover:text-primary-end transition-colors"> Learn more 
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg></a>
         </div>
-        <div class="bg-bg rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover group">
+        <div class="bg-surface rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover group">
          <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
          </div>
          <h3 class="font-heading font-bold text-headline text-lg mb-3">CAD Retainers</h3>
-         <p class="text-secondary text-sm leading-relaxed mb-4">Dedicated monthly CAD capacity for ongoing needs.</p><a href="#" onclick="navigateTo('services-retainers'); return false;" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-start hover:text-primary-end transition-colors"> Learn more 
+         <p class="text-secondary text-sm leading-relaxed mb-4">Dedicated monthly capacity for ongoing projects.</p><a href="#" onclick="navigateTo('services-retainers'); return false;" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-start hover:text-primary-end transition-colors"> Learn more 
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg></a>
         </div>
-        <div class="bg-bg rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover group">
+        <div class="bg-surface rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover group">
          <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
          </div>
-         <h3 class="font-heading font-bold text-headline text-lg mb-3">Digital Product Assets</h3>
-         <p class="text-secondary text-sm leading-relaxed mb-4">Photorealistic renders and 360° product spins.</p><a href="#" onclick="navigateTo('services-digital'); return false;" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-start hover:text-primary-end transition-colors"> Learn more 
+         <h3 class="font-heading font-bold text-headline text-lg mb-3">Digital Assets</h3>
+         <p class="text-secondary text-sm leading-relaxed mb-4">Photorealistic renders and interactive 360° spins.</p><a href="#" onclick="navigateTo('services-digital'); return false;" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-start hover:text-primary-end transition-colors"> Learn more 
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg></a>
         </div>
-        <div class="bg-bg rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover group">
+        <div class="bg-surface rounded-2xl p-6 sm:p-8 border border-gray-100 card-hover group">
          <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
           </svg>
          </div>
-         <h3 class="font-heading font-bold text-headline text-lg mb-3">Manufacturing Services</h3>
-         <p class="text-secondary text-sm leading-relaxed mb-4">White-label export production from India.</p><a href="#" onclick="navigateTo('services-manufacturing'); return false;" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-start hover:text-primary-end transition-colors"> Learn more 
+         <h3 class="font-heading font-bold text-headline text-lg mb-3">Manufacturing</h3>
+         <p class="text-secondary text-sm leading-relaxed mb-4">White-label production from our India facility.</p><a href="#" onclick="navigateTo('services-manufacturing'); return false;" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-start hover:text-primary-end transition-colors"> Learn more 
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
           </svg></a>
         </div>
@@ -605,7 +609,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
        <div class="text-center mb-12 lg:mb-16">
         <h2 class="font-heading font-bold text-headline text-3xl sm:text-4xl lg:text-5xl letter-tight mb-4">Our Process</h2>
-        <p class="text-lg text-secondary max-w-2xl mx-auto">A structured approach designed for production efficiency</p>
+        <p class="text-lg text-secondary max-w-2xl mx-auto">A structured approach built for efficiency and quality</p>
        </div>
        <div class="grid md:grid-cols-4 gap-6">
         <div class="bg-surface rounded-2xl p-6 border border-gray-100 card-hover relative">
@@ -613,33 +617,33 @@
           1
          </div>
          <h3 class="font-heading font-semibold text-headline mb-2">Discovery</h3>
-         <p class="text-sm text-secondary">Understand your requirements, brand standards, and production needs.</p>
+         <p class="text-sm text-secondary">Understand your requirements and brand standards.</p>
         </div>
         <div class="bg-surface rounded-2xl p-6 border border-gray-100 card-hover relative">
          <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white font-heading font-bold mb-4">
           2
          </div>
          <h3 class="font-heading font-semibold text-headline mb-2">Design</h3>
-         <p class="text-sm text-secondary">Create manufacturing-ready CAD files with your specifications.</p>
+         <p class="text-sm text-secondary">Create manufacturing-ready CAD files.</p>
         </div>
         <div class="bg-surface rounded-2xl p-6 border border-gray-100 card-hover relative">
          <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white font-heading font-bold mb-4">
           3
          </div>
          <h3 class="font-heading font-semibold text-headline mb-2">Review</h3>
-         <p class="text-sm text-secondary">Collaborative refinement until designs meet your standards.</p>
+         <p class="text-sm text-secondary">Collaborate on refinements until perfection.</p>
         </div>
         <div class="bg-surface rounded-2xl p-6 border border-gray-100 card-hover relative">
          <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center text-white font-heading font-bold mb-4">
           4
          </div>
-         <h3 class="font-heading font-semibold text-headline mb-2">Production</h3>
-         <p class="text-sm text-secondary">Deliver production-ready files or manufactured pieces.</p>
+         <h3 class="font-heading font-semibold text-headline mb-2">Deliver</h3>
+         <p class="text-sm text-secondary">Production-ready files or finished pieces.</p>
         </div>
        </div>
       </div>
      </section><!-- Quality Section -->
-     <section id="quality" class="py-16 sm:py-20 lg:py-24 bg-surface">
+     <section id="quality" class="py-16 sm:py-20 lg:py-24 bg-bg">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
        <h2 class="font-heading font-bold text-headline text-3xl sm:text-4xl lg:text-5xl letter-tight mb-6">Quality Without Compromise</h2>
        <p class="text-lg text-secondary mb-8 leading-relaxed max-w-3xl">Every file we deliver is production-tested and manufacturing-ready. Our quality standards match the requirements of leading US and Australian jewelry brands.</p>
@@ -651,7 +655,7 @@
          </div>
          <div>
           <h4 class="font-heading font-semibold text-headline">Manufacturing-Ready Files</h4>
-          <p class="text-sm text-secondary">Files optimized for casting, 3D printing, and CNC machining.</p>
+          <p class="text-sm text-secondary">Optimized for casting, 3D printing, and CNC machining.</p>
          </div>
         </div>
         <div class="flex items-start gap-4">
@@ -661,7 +665,7 @@
          </div>
          <div>
           <h4 class="font-heading font-semibold text-headline">Consistent Standards</h4>
-          <p class="text-sm text-secondary">Documented processes ensure consistency across all deliverables.</p>
+          <p class="text-sm text-secondary">Documented processes ensure quality across all work.</p>
          </div>
         </div>
         <div class="flex items-start gap-4">
@@ -670,8 +674,8 @@
           </svg>
          </div>
          <div>
-          <h4 class="font-heading font-semibold text-headline">Revision Support</h4>
-          <p class="text-sm text-secondary">Unlimited revisions until your design is production-perfect.</p>
+          <h4 class="font-heading font-semibold text-headline">Unlimited Revisions</h4>
+          <p class="text-sm text-secondary">We iterate until your design is production-perfect.</p>
          </div>
         </div>
        </div>
@@ -680,35 +684,35 @@
      <section id="clients" class="py-16 sm:py-20 lg:py-24 gradient-light">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
        <div class="text-center mb-12">
-        <h2 class="font-heading font-bold text-headline text-3xl sm:text-4xl lg:text-5xl letter-tight mb-4">Trusted by Professional Brands</h2>
-        <p class="text-lg text-secondary max-w-2xl mx-auto">We work exclusively with established jewelry businesses in the USA and Australia.</p>
+        <h2 class="font-heading font-bold text-headline text-3xl sm:text-4xl lg:text-5xl letter-tight mb-4">Trusted by Leading Brands</h2>
+        <p class="text-lg text-secondary max-w-2xl mx-auto">We work exclusively with established jewelry businesses in the USA and Australia</p>
        </div>
        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="bg-surface rounded-2xl p-8 border border-gray-100 text-center">
          <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center"><span class="text-2xl">🇺🇸</span>
          </div>
          <h3 class="font-heading font-semibold text-headline mb-2">US Retailers</h3>
-         <p class="text-sm text-secondary">Supporting American jewelry brands with CAD and manufacturing services.</p>
+         <p class="text-sm text-secondary">Supporting American jewelry brands with world-class CAD and manufacturing.</p>
         </div>
         <div class="bg-surface rounded-2xl p-8 border border-gray-100 text-center">
          <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center"><span class="text-2xl">🇦🇺</span>
          </div>
          <h3 class="font-heading font-semibold text-headline mb-2">Australian Brands</h3>
-         <p class="text-sm text-secondary">Dedicated production support for Australian jewelry companies.</p>
+         <p class="text-sm text-secondary">Dedicated production support for Australia's finest jewelry companies.</p>
         </div>
         <div class="bg-surface rounded-2xl p-8 border border-gray-100 text-center sm:col-span-2 lg:col-span-1">
          <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center"><span class="text-2xl">🤝</span>
          </div>
-         <h3 class="font-heading font-semibold text-headline mb-2">Trade Partners</h3>
-         <p class="text-sm text-secondary">Long-term relationships built on trust, quality, and confidentiality.</p>
+         <h3 class="font-heading font-semibold text-headline mb-2">Long-Term Partners</h3>
+         <p class="text-sm text-secondary">Built on trust, quality, and confidentiality.</p>
         </div>
        </div>
       </div>
      </section><!-- Dark CTA Section -->
      <section class="gradient-dark py-16 sm:py-20 lg:py-24">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-       <h2 id="cta-headline" class="font-heading font-bold text-white text-3xl sm:text-4xl lg:text-5xl letter-tight mb-6">Ready to Discuss Your Requirements?</h2>
-       <p id="cta-subtext" class="text-lg text-gray-300 mb-10 max-w-2xl mx-auto">Let's discuss how we can support your jewelry operations.</p><a href="#" onclick="navigateTo('contact'); return false;" class="inline-block bg-white text-headline px-8 py-4 rounded-lg font-semibold btn-primary shadow-lg"> Start a Conversation </a>
+       <h2 id="cta-headline" class="font-heading font-bold text-white text-3xl sm:text-4xl lg:text-5xl letter-tight mb-6">Ready to Scale Your Jewelry Brand?</h2>
+       <p id="cta-subtext" class="text-lg text-gray-300 mb-10 max-w-2xl mx-auto">Get started with a custom quote or discuss your production needs.</p><a href="#" onclick="navigateTo('contact'); return false;" class="inline-block bg-white text-headline px-8 py-4 rounded-lg font-semibold btn-primary shadow-lg"> Contact Us Today </a>
       </div>
      </section>
     </div><!-- CONTACT PAGE -->
@@ -716,7 +720,7 @@
      <section class="gradient-hero py-16 sm:py-20">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
        <h1 id="contact-headline" class="font-heading font-bold text-headline text-4xl sm:text-5xl letter-tight mb-4">Let's Start a Conversation</h1>
-       <p id="form-subtitle" class="text-lg text-secondary">Just 3 minutes to get started—we'll reach out within 24 hours.</p>
+       <p id="form-subtitle" class="text-lg text-secondary">Tell us about your jewelry business—we'll respond within 24 hours.</p>
       </div>
      </section>
      <section class="py-12 sm:py-16 bg-bg">
@@ -727,7 +731,7 @@
          </svg>
         </div>
         <h2 class="font-heading font-bold text-headline text-2xl sm:text-3xl mb-4">Thank You!</h2>
-        <p class="text-lg text-secondary mb-8">We've received your inquiry and will respond within 24 hours.</p><a href="#" onclick="navigateTo('home'); return false;" class="inline-block gradient-primary text-white px-6 py-3 rounded-lg font-semibold btn-primary"> Return Home </a>
+        <p class="text-lg text-secondary mb-8">We've received your message and will be in touch within 24 hours.</p><a href="#" onclick="navigateTo('home'); return false;" class="inline-block gradient-primary text-white px-6 py-3 rounded-lg font-semibold btn-primary"> Return Home </a>
        </div>
        <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-6">
         <div><label for="company-name" class="block text-sm font-medium text-headline mb-2">Company Name *</label> <input type="text" id="company-name" name="company-name" required placeholder="Your company name" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary-start focus:ring-2 focus:ring-primary-start/20 outline-none transition-colors">
@@ -740,7 +744,7 @@
         </div>
         <div><label for="message" class="block text-sm font-medium text-headline mb-2">Tell us about your needs (optional)</label> <textarea id="message" name="message" rows="4" placeholder="Brief overview of your project..." class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary-start focus:ring-2 focus:ring-primary-start/20 outline-none transition-colors resize-none"></textarea>
         </div><button type="submit" class="w-full gradient-primary text-white py-4 rounded-xl font-semibold text-lg btn-primary shadow-lg shadow-primary-start/25 hover:shadow-lg"> Get Started </button>
-        <p class="text-center text-xs text-secondary">We respect your privacy. We'll only reach out about your inquiry.</p>
+        <p class="text-center text-xs text-secondary">We respect your privacy and keep all information confidential.</p>
        </form>
       </div>
      </section>
@@ -751,7 +755,7 @@
        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-primary-start/20 mb-6"><span class="text-sm font-medium text-primary-end">Services</span>
        </div>
        <h1 class="font-heading font-bold text-headline text-4xl sm:text-5xl letter-tight mb-4">Jewelry CAD Services</h1>
-       <p class="text-lg text-secondary">Manufacturing-ready 3D CAD design for fine jewelry.</p>
+       <p class="text-lg text-secondary">Manufacturing-ready 3D design for fine jewelry.</p>
       </div>
      </section>
      <section class="py-16 bg-surface">
@@ -811,7 +815,7 @@
        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-primary-start/20 mb-6"><span class="text-sm font-medium text-primary-end">Services</span>
        </div>
        <h1 class="font-heading font-bold text-headline text-4xl sm:text-5xl letter-tight mb-4">CAD Retainers</h1>
-       <p class="text-lg text-secondary">Dedicated monthly CAD capacity for ongoing design needs.</p>
+       <p class="text-lg text-secondary">Dedicated monthly CAD capacity for growing jewelry brands.</p>
       </div>
      </section>
      <section class="py-16 bg-surface">
@@ -887,7 +891,7 @@
        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-primary-start/20 mb-6"><span class="text-sm font-medium text-primary-end">Services</span>
        </div>
        <h1 class="font-heading font-bold text-headline text-4xl sm:text-5xl letter-tight mb-4">Digital Product Assets</h1>
-       <p class="text-lg text-secondary">Photorealistic renders and 360° product spins for e-commerce.</p>
+       <p class="text-lg text-secondary">Photorealistic renders and interactive 360° product spins for e-commerce.</p>
       </div>
      </section>
      <section class="py-16 bg-surface">
@@ -900,7 +904,7 @@
           </svg>
          </div>
          <h3 class="font-heading font-semibold text-headline text-xl mb-3">Static Renders</h3>
-         <p class="text-secondary mb-4">High-resolution photorealistic images perfect for catalogs, websites, and marketing materials.</p>
+         <p class="text-secondary mb-4">High-resolution photorealistic images for catalogs, websites, and marketing.</p>
          <ul class="space-y-2 text-sm text-secondary">
           <li>• Multiple angles and perspectives</li>
           <li>• Various metal and stone options</li>
@@ -914,7 +918,7 @@
           </svg>
          </div>
          <h3 class="font-heading font-semibold text-headline text-xl mb-3">360° Product Spins</h3>
-         <p class="text-secondary mb-4">Interactive product views that let customers examine jewelry from every angle.</p>
+         <p class="text-secondary mb-4">Interactive product views letting customers examine jewelry from every angle.</p>
          <ul class="space-y-2 text-sm text-secondary">
           <li>• Smooth rotation animations</li>
           <li>• Web-optimized file formats</li>
@@ -933,7 +937,7 @@
        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-primary-start/20 mb-6"><span class="text-sm font-medium text-primary-end">Services</span>
        </div>
        <h1 class="font-heading font-bold text-headline text-4xl sm:text-5xl letter-tight mb-4">Manufacturing Services</h1>
-       <p class="text-lg text-secondary">White-label export production from India.</p>
+       <p class="text-lg text-secondary">White-label export production from our India facility.</p>
       </div>
      </section>
      <section class="py-16 bg-surface">
@@ -1015,7 +1019,7 @@
          </svg>
         </div><span class="font-heading font-bold text-lg">The CAD Pillar</span>
        </div>
-       <p class="text-gray-400 text-sm">Your long-term jewelry CAD and manufacturing partner.</p>
+       <p class="text-gray-400 text-sm">Your jewelry CAD and manufacturing partner.</p>
       </div>
       <div>
        <h4 class="font-heading font-semibold mb-4">Services</h4>
@@ -1043,7 +1047,7 @@
       </div>
      </div>
      <div class="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
-      <p>© 2024 The CAD Pillar. All rights reserved. Trade partners only.</p>
+      <p>© 2024 The CAD Pillar. All rights reserved.</p>
      </div>
     </div>
    </footer>
@@ -1410,5 +1414,5 @@
       updatePriceDisplay();
     })();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cd4159011233501',t:'MTc3MDk4MzE3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cd41d8dd6e53501',t:'MTc3MDk4MzUwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
