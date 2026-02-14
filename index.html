@@ -1414,5 +1414,83 @@
       updatePriceDisplay();
     })();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cd41d8dd6e53501',t:'MTc3MDk4MzUwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cd41d8dd6e53501',t:'MTc3MDk4MzUwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+  const supabaseUrl = "https://supabase.com/dashboard/project/wqpklpdpyqdncgpdznfq/settings/api-keys/legacy";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxcGtscGRweXFkbmNncGR6bmZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwMzgyOTgsImV4cCI6MjA4NjYxNDI5OH0.8rjBhzSkTEpV6czgEc0mQuv_0HfUU7IGqrvquG7TgTc";
+
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("contact-form");
+
+    if (!form) {
+      console.error("Form with ID 'contact-form' not found.");
+      return;
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const file = document.getElementById("image").files[0];
+
+      if (!file) {
+        alert("Please upload an image.");
+        return;
+      }
+
+      const filePath = `public/${Date.now()}-${file.name}`;
+
+      const { error: uploadError } = await supabase
+        .storage
+        .from("design-images")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        alert("Image upload failed.");
+        console.error(uploadError);
+        return;
+      }
+
+      const { error } = await supabase
+        .from("enquiries")
+        .insert([
+          {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value,
+            design_type: document.getElementById("design_type").value,
+            stones: Number(document.getElementById("stones").value),
+            metal: document.getElementById("metal").value,
+            urgency: document.getElementById("urgency").value,
+            estimated_price: Number(document.getElementById("price").value),
+            image_url: filePath,
+            status: "pending"
+          }
+        ]);
+
+      if (error) {
+        alert("Submission failed.");
+        console.error(error);
+      } else {
+        alert("Quote submitted successfully.");
+        form.reset();
+      }
+
+    });
+
+  });
+
+</script>
+
+</script>
+
+</body>
 </html>
+
