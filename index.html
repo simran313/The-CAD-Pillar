@@ -445,9 +445,9 @@
           </div><!-- Delivery Speed -->
           <div class="cad-form-group"><label for="delivery" class="cad-label">Delivery Speed</label> <select id="delivery" class="cad-select"> <option value="standard">Standard (3-5 days)</option> <option value="express">Express (48 hours)</option> </select>
           </div><!-- Add Render Option -->
-          <div class="cad-form-group"><label class="cad-label">Add Digital Renders? (Optional)</label> <label class="cad-checkbox-group"> <input type="checkbox" id="add-render" onchange="updatePriceDisplay()"> <span>4 Images + 360° Video</span> </label>
+          <div class="cad-form-group"><label class="cad-label">Add Digital Renders? (Optional)</label> <label class="cad-checkbox-group"> <input type="checkbox" id="add-render"> <span>4 Images + 360° Video</span> </label>
           </div><!-- Number of Tones for Render -->
-          <div id="tone-group" class="cad-form-group" style="display: none;"><label for="render-tones" class="cad-label">Metal Tones to Render</label> <select id="render-tones" class="cad-select" onchange="updatePriceDisplay()"> <option value="">Select number of tones</option> <option value="1">1 Tone - $50</option> <option value="3">3 Tones - $70</option> </select>
+          <div id="tone-group" class="cad-form-group" style="display: none;"><label for="render-tones" class="cad-label">Metal Tones to Render</label> <select id="render-tones" class="cad-select"> <option value="">Select number of tones</option> <option value="1">1 Tone - $50</option> <option value="3">3 Tones - $70</option> </select>
           </div><!-- Price Display -->
           <div class="cad-price-display">
            <p class="cad-price-label">Your Estimated Price Range:</p>
@@ -495,6 +495,8 @@
           <p class="cad-calculator-subtitle">Complete your order</p>
           <div class="cad-quote-summary">
            <div class="cad-summary-row"><span class="cad-summary-label">Price Range:</span> <span id="final-price" class="cad-summary-value">$0 - $0</span>
+           </div>
+           <div class="cad-summary-row"><span class="cad-summary-label">Deposit Required (50%):</span> <span id="final-deposit" class="cad-summary-value">$0</span>
            </div>
            <div class="cad-summary-row"><span class="cad-summary-label">Confirmation Email:</span> <span id="final-email" class="cad-summary-value"></span>
            </div>
@@ -1130,7 +1132,8 @@
         imageFile: null,
         estimatedPriceMin: 0,
         estimatedPriceMax: 0,
-        generatedOTP: ''
+        depositAmount: 0,
+        paypalBusinessEmail: ''
       };
       
       const elements = {
@@ -1157,6 +1160,7 @@
         verifyOtpBtn: document.getElementById('verify-otp-btn'),
         resendOtpLink: document.getElementById('resend-otp-link'),
         finalPrice: document.getElementById('final-price'),
+        finalDeposit: document.getElementById('final-deposit'),
         finalEmail: document.getElementById('final-email'),
         paypalBtn: document.getElementById('paypal-btn'),
         restartLink: document.getElementById('restart-calculator-link'),
@@ -1263,38 +1267,105 @@
         return true;
       }
       
-      function generateOTP() {
-        return Math.floor(100000 + Math.random() * 900000).toString();
-      }
-      
-      function sendOTPSimulation(email) {
-        const otp = generateOTP();
-        calculatorState.generatedOTP = otp;
-        console.log(`OTP for ${email}: ${otp}`);
-        
-        const emailSpan = elements.otpEmailDisplay.querySelector('strong');
-        emailSpan.textContent = email;
-      }
-      
-      function validateOTP() {
-        const enteredOTP = elements.otpInput.value.trim();
-        
-        if (enteredOTP === calculatorState.generatedOTP) {
-          elements.otpError.classList.remove('show');
-          return true;
-        } else {
-          elements.otpError.textContent = 'Invalid OTP. Please try again.';
-          elements.otpError.classList.add('show');
-          return false;
+      // API Functions for OTP and Quote Submission
+      async function sendOTP(email) {
+        try {
+          const response = await fetch('/.netlify/functions/send-otp', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+          });
+
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to send OTP');
+          }
+
+          const emailSpan = elements.otpEmailDisplay.querySelector('strong');
+          emailSpan.textContent = email;
+          
+          return { success: true };
+        } catch (error) {
+          console.error('Error sending OTP:', error);
+          return { success: false, error: error.message };
         }
       }
-      
-      function generatePayPalLink() {
-        const businessEmail = 'business@thecadpillar.com';
-        const avgAmount = Math.round((calculatorState.estimatedPriceMin + calculatorState.estimatedPriceMax) / 2);
-        const description = `CAD Design - ${calculatorState.designType}`;
+
+      async function verifyOTP(email, otp) {
+        try {
+          const response = await fetch('/.netlify/functions/verify-otp', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, otp }),
+          });
+
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to verify OTP');
+          }
+
+          return { success: true };
+        } catch (error) {
+          console.error('Error verifying OTP:', error);
+          return { success: false, error: error.message };
+        }
+      }
+
+      async function submitQuote() {
+        try {
+          // Convert image to base64
+          let imageBase64 = null;
+          if (calculatorState.imageFile) {
+            imageBase64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(calculatorState.imageFile);
+            });
+          }
+
+          const response = await fetch('/.netlify/functions/submit-quote', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: calculatorState.email,
+              fullName: calculatorState.fullName,
+              phone: calculatorState.phone,
+              designType: calculatorState.designType,
+              stones: calculatorState.stones,
+              metal: calculatorState.metal,
+              delivery: calculatorState.delivery,
+              addRender: calculatorState.addRender,
+              renderTones: calculatorState.renderTones,
+              imageBase64,
+            }),
+          });
+
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to submit quote');
+          }
+
+          return { success: true, data };
+        } catch (error) {
+          console.error('Error submitting quote:', error);
+          return { success: false, error: error.message };
+        }
+      }
+
+      function generatePayPalLink(depositAmount, businessEmail) {
+        const description = `CAD Design - ${calculatorState.designType} (50% Deposit)`;
         
-        const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${businessEmail}&item_name=${encodeURIComponent(description)}&amount=${avgAmount}&currency_code=USD&invoice=${Date.now()}&return=https://www.thecadpillar.com/success`;
+        const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${businessEmail}&item_name=${encodeURIComponent(description)}&amount=${depositAmount}&currency_code=USD&invoice=${Date.now()}&return=https://www.thecadpillar.com/success`;
         
         return paypalUrl;
       }
@@ -1345,34 +1416,119 @@
         showStep('calculator');
       });
       
-      elements.submitDetailsBtn.addEventListener('click', () => {
+      elements.submitDetailsBtn.addEventListener('click', async () => {
         if (validateDetailsForm()) {
           calculatorState.fullName = elements.fullNameInput.value.trim();
           calculatorState.email = elements.emailInput.value.trim();
           calculatorState.phone = elements.phoneInput.value.trim();
           calculatorState.imageFile = elements.imageInput.files[0];
           
-          sendOTPSimulation(calculatorState.email);
-          showStep('otp');
+          // Disable button while sending
+          elements.submitDetailsBtn.disabled = true;
+          elements.submitDetailsBtn.textContent = 'Sending OTP...';
+          
+          const result = await sendOTP(calculatorState.email);
+          
+          // Re-enable button
+          elements.submitDetailsBtn.disabled = false;
+          elements.submitDetailsBtn.textContent = 'Send OTP';
+          
+          if (result.success) {
+            showStep('otp');
+          } else {
+            elements.validationError.textContent = result.error || 'Failed to send OTP. Please try again.';
+            elements.validationError.classList.add('show');
+          }
         }
       });
       
-      elements.verifyOtpBtn.addEventListener('click', () => {
-        if (validateOTP()) {
-          elements.finalPrice.textContent = `$${calculatorState.estimatedPriceMin} - $${calculatorState.estimatedPriceMax}`;
-          elements.finalEmail.textContent = calculatorState.email;
-          showStep('payment');
+      elements.verifyOtpBtn.addEventListener('click', async () => {
+        const enteredOTP = elements.otpInput.value.trim();
+        
+        if (!enteredOTP) {
+          elements.otpError.textContent = 'Please enter the OTP.';
+          elements.otpError.classList.add('show');
+          return;
+        }
+        
+        // Disable button while verifying
+        elements.verifyOtpBtn.disabled = true;
+        elements.verifyOtpBtn.textContent = 'Verifying...';
+        
+        const verifyResult = await verifyOTP(calculatorState.email, enteredOTP);
+        
+        if (verifyResult.success) {
+          elements.otpError.classList.remove('show');
+          
+          // Show loading state
+          elements.verifyOtpBtn.textContent = 'Submitting Quote...';
+          
+          // Submit quote after OTP verification
+          const quoteResult = await submitQuote();
+          
+          // Re-enable button
+          elements.verifyOtpBtn.disabled = false;
+          elements.verifyOtpBtn.textContent = 'Verify & Continue';
+          
+          if (quoteResult.success) {
+            // Store server-returned values
+            calculatorState.estimatedPriceMin = quoteResult.data.priceMin;
+            calculatorState.estimatedPriceMax = quoteResult.data.priceMax;
+            calculatorState.depositAmount = quoteResult.data.depositAmount;
+            calculatorState.paypalBusinessEmail = quoteResult.data.paypalBusinessEmail;
+            
+            // Update payment display
+            elements.finalPrice.textContent = `$${quoteResult.data.priceMin} - $${quoteResult.data.priceMax}`;
+            elements.finalDeposit.textContent = `$${quoteResult.data.depositAmount}`;
+            elements.finalEmail.textContent = calculatorState.email;
+            
+            showStep('payment');
+          } else {
+            elements.otpError.textContent = quoteResult.error || 'Failed to submit quote. Please try again.';
+            elements.otpError.classList.add('show');
+          }
+        } else {
+          // Re-enable button
+          elements.verifyOtpBtn.disabled = false;
+          elements.verifyOtpBtn.textContent = 'Verify & Continue';
+          
+          elements.otpError.textContent = verifyResult.error || 'Invalid OTP. Please try again.';
+          elements.otpError.classList.add('show');
         }
       });
       
-      elements.resendOtpLink.addEventListener('click', (e) => {
+      elements.resendOtpLink.addEventListener('click', async (e) => {
         e.preventDefault();
-        sendOTPSimulation(calculatorState.email);
-        elements.otpInput.value = '';
+        
+        // Show loading state
+        elements.resendOtpLink.textContent = 'Sending...';
+        
+        const result = await sendOTP(calculatorState.email);
+        
+        // Reset link text
+        elements.resendOtpLink.textContent = 'Resend OTP';
+        
+        if (result.success) {
+          elements.otpInput.value = '';
+          elements.otpError.textContent = 'New OTP sent successfully!';
+          elements.otpError.style.color = '#10b981'; // Green color
+          elements.otpError.classList.add('show');
+          
+          // Reset error color after 3 seconds
+          setTimeout(() => {
+            elements.otpError.style.color = '';
+            elements.otpError.classList.remove('show');
+          }, 3000);
+        } else {
+          elements.otpError.textContent = result.error || 'Failed to resend OTP. Please try again.';
+          elements.otpError.classList.add('show');
+        }
       });
       
       elements.paypalBtn.addEventListener('click', () => {
-        const paypalLink = generatePayPalLink();
+        const depositAmount = calculatorState.depositAmount;
+        const businessEmail = calculatorState.paypalBusinessEmail || 'business@thecadpillar.com';
+        const paypalLink = generatePayPalLink(depositAmount, businessEmail);
         window.open(paypalLink, '_blank', 'noopener,noreferrer');
       });
       
@@ -1391,7 +1547,8 @@
           imageFile: null,
           estimatedPriceMin: 0,
           estimatedPriceMax: 0,
-          generatedOTP: ''
+          depositAmount: 0,
+          paypalBusinessEmail: ''
         };
         
         elements.designTypeSelect.value = '';
