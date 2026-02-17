@@ -451,7 +451,7 @@
           </div><!-- Price Display -->
           <div class="cad-price-display">
            <p class="cad-price-label">Your Estimated Price Range:</p>
-           <p id="price-output" class="cad-price-amount">$0 - $0</p>
+           <p id="price-output" class="cad-price-amount">Verify email to see price</p>
            <p id="price-breakdown" class="cad-price-breakdown"></p>
           </div><!-- Proceed Button --> <button id="proceed-btn" class="cad-proceed-btn">Continue to Checkout</button>
          </div>
@@ -1133,7 +1133,8 @@
         estimatedPriceMin: 0,
         estimatedPriceMax: 0,
         depositAmount: 0,
-        paypalBusinessEmail: ''
+        paypalBusinessEmail: '',
+        isOtpVerified: false
       };
       
       const elements = {
@@ -1204,15 +1205,21 @@
         calculatorState.estimatedPriceMin = totals.min;
         calculatorState.estimatedPriceMax = totals.max;
         
-        elements.priceOutput.textContent = `$${totals.min} - $${totals.max}`;
-        
-        let breakdown = '';
-        if (calculatorState.addRender && calculatorState.renderTones) {
-          breakdown = `Approx. CAD: $${cadPrice.min}-$${cadPrice.max} + Renders: $${renderPrices[calculatorState.renderTones]}`;
+        // Don't show actual prices until OTP is verified
+        if (!calculatorState.isOtpVerified) {
+          elements.priceOutput.textContent = 'Verify email to see price';
+          elements.priceBreakdown.textContent = '';
         } else {
-          breakdown = `Approx. CAD Design`;
+          elements.priceOutput.textContent = `$${totals.min} - $${totals.max}`;
+          
+          let breakdown = '';
+          if (calculatorState.addRender && calculatorState.renderTones) {
+            breakdown = `Approx. CAD: $${cadPrice.min}-$${cadPrice.max} + Renders: $${renderPrices[calculatorState.renderTones]}`;
+          } else {
+            breakdown = `Approx. CAD Design`;
+          }
+          elements.priceBreakdown.textContent = breakdown;
         }
-        elements.priceBreakdown.textContent = breakdown;
       }
       
       function showStep(stepName) {
@@ -1471,6 +1478,9 @@
           elements.verifyOtpBtn.textContent = 'Verify & Continue';
           
           if (quoteResult.success) {
+            // Mark OTP as verified
+            calculatorState.isOtpVerified = true;
+            
             // Store server-returned values
             calculatorState.estimatedPriceMin = quoteResult.data.priceMin;
             calculatorState.estimatedPriceMax = quoteResult.data.priceMax;
@@ -1548,7 +1558,8 @@
           estimatedPriceMin: 0,
           estimatedPriceMax: 0,
           depositAmount: 0,
-          paypalBusinessEmail: ''
+          paypalBusinessEmail: '',
+          isOtpVerified: false
         };
         
         elements.designTypeSelect.value = '';
