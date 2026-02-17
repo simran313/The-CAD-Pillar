@@ -1537,7 +1537,13 @@
       
       elements.paypalBtn.addEventListener('click', () => {
         const depositAmount = calculatorState.depositAmount;
-        const businessEmail = calculatorState.paypalBusinessEmail || 'business@thecadpillar.com';
+        const businessEmail = calculatorState.paypalBusinessEmail;
+        
+        if (!businessEmail) {
+          alert('Payment configuration error. Please contact support.');
+          return;
+        }
+        
         const paypalLink = generatePayPalLink(depositAmount, businessEmail);
         window.open(paypalLink, '_blank', 'noopener,noreferrer');
       });
