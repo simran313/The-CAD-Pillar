@@ -1,0 +1,7 @@
+{
+  "name": "the-cad-pillar",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CAD Quote Calculator with Email OTP Verification",
+  "private": true
+}
