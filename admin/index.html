@@ -166,6 +166,17 @@
       handleLogout();
     });
 
+    // Initialize the widget
+    netlifyIdentity.init();
+
+    // Auto-open widget if recovery_token or invite_token is present in URL hash
+    if (window.location.hash) {
+      const hash = window.location.hash;
+      if (hash.includes('recovery_token=') || hash.includes('invite_token=') || hash.includes('confirmation_token=')) {
+        netlifyIdentity.open();
+      }
+    }
+
     // Event listeners
     document.getElementById('loginButton').addEventListener('click', () => {
       netlifyIdentity.open('login');
