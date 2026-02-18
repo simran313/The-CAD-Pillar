@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - The CAD Pillar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <style>
+    .modal {
+      display: none;
+    }
+    .modal.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Login Screen -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center">Admin Dashboard</h1>
+      <p class="text-gray-600 mb-6 text-center">The CAD Pillar</p>
+      <button id="loginButton" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition">
+        Sign In with Netlify Identity
+      </button>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="dashboardScreen" class="hidden">
+    <!-- Header -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <h1 class="text-xl font-bold text-gray-800">Admin Dashboard</h1>
+            <span class="ml-4 text-sm text-gray-500">The CAD Pillar</span>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span id="userEmail" class="text-sm text-gray-600"></span>
+            <button id="logoutButton" class="text-sm text-red-600 hover:text-red-700">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Filters -->
+      <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
+            <select id="statusFilter" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="flex-1"></div>
+          <button id="refreshButton" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <p class="mt-4 text-gray-600">Loading quotes...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+        <h3 class="text-red-800 font-semibold mb-2">Error Loading Quotes</h3>
+        <p id="errorMessage" class="text-red-600"></p>
+      </div>
+
+      <!-- Quotes Table -->
+      <div id="quotesTable" class="hidden bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Design Type</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price Range</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="quotesTableBody" class="bg-white divide-y divide-gray-200">
+              <!-- Rows will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+          <div class="text-sm text-gray-700">
+            Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> quotes
+          </div>
+          <div class="flex space-x-2">
+            <button id="prevButton" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              Previous
+            </button>
+            <button id="nextButton" class="px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote Details Modal -->
+  <div id="quoteModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-gray-800">Quote Details</h2>
+        <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div id="quoteDetails" class="p-6">
+        <!-- Details will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global state
+    let currentUser = null;
+    let currentToken = null;
+    let quotes = [];
+    let currentPage = 0;
+    let pageSize = 50;
+    let totalQuotes = 0;
+    let currentStatus = 'all';
+
+    // API base URL
+    const API_BASE = '/.netlify/functions';
+
+    // Initialize Netlify Identity
+    netlifyIdentity.on('init', user => {
+      if (user) {
+        handleLogin(user);
+      }
+    });
+
+    netlifyIdentity.on('login', user => {
+      handleLogin(user);
+      netlifyIdentity.close();
+    });
+
+    netlifyIdentity.on('logout', () => {
+      handleLogout();
+    });
+
+    // Event listeners
+    document.getElementById('loginButton').addEventListener('click', () => {
+      netlifyIdentity.open('login');
+    });
+
+    document.getElementById('logoutButton').addEventListener('click', () => {
+      netlifyIdentity.logout();
+    });
+
+    document.getElementById('refreshButton').addEventListener('click', () => {
+      loadQuotes();
+    });
+
+    document.getElementById('statusFilter').addEventListener('change', (e) => {
+      currentStatus = e.target.value;
+      currentPage = 0;
+      loadQuotes();
+    });
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+      if (currentPage > 0) {
+        currentPage--;
+        loadQuotes();
+      }
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+      if ((currentPage + 1) * pageSize < totalQuotes) {
+        currentPage++;
+        loadQuotes();
+      }
+    });
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('quoteModal').classList.remove('active');
+    });
+
+    // Handle login
+    function handleLogin(user) {
+      currentUser = user;
+      currentToken = user.token.access_token;
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('dashboardScreen').classList.remove('hidden');
+      loadQuotes();
+    }
+
+    // Handle logout
+    function handleLogout() {
+      currentUser = null;
+      currentToken = null;
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('dashboardScreen').classList.add('hidden');
+    }
+
+    // Load quotes from API
+    async function loadQuotes() {
+      document.getElementById('loadingState').classList.remove('hidden');
+      document.getElementById('errorState').classList.add('hidden');
+      document.getElementById('quotesTable').classList.add('hidden');
+
+      try {
+        const offset = currentPage * pageSize;
+        const statusParam = currentStatus !== 'all' ? `&status=${currentStatus}` : '';
+        
+        const response = await fetch(
+          `${API_BASE}/admin-list-quotes?limit=${pageSize}&offset=${offset}${statusParam}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${currentToken}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to load quotes');
+        }
+
+        const data = await response.json();
+        quotes = data.quotes;
+        totalQuotes = data.pagination.total;
+
+        renderQuotes();
+        updatePagination();
+
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('quotesTable').classList.remove('hidden');
+      } catch (error) {
+        console.error('Error loading quotes:', error);
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+        document.getElementById('errorMessage').textContent = error.message;
+      }
+    }
+
+    // Render quotes table
+    function renderQuotes() {
+      const tbody = document.getElementById('quotesTableBody');
+      tbody.innerHTML = '';
+
+      if (quotes.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+              No quotes found
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      quotes.forEach(quote => {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50';
+        row.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            ${new Date(quote.created_at).toLocaleDateString()}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">${escapeHtml(quote.full_name)}</div>
+            <div class="text-sm text-gray-500">${escapeHtml(quote.email)}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            ${escapeHtml(quote.design_type)}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            $${quote.price_min} - $${quote.price_max}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(quote.status)}">
+              ${escapeHtml(quote.status)}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button onclick="viewQuote('${quote.id}')" class="text-blue-600 hover:text-blue-900">
+              View Details
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Update pagination
+    function updatePagination() {
+      const showing = Math.min((currentPage + 1) * pageSize, totalQuotes);
+      document.getElementById('showingCount').textContent = showing;
+      document.getElementById('totalCount').textContent = totalQuotes;
+      
+      document.getElementById('prevButton').disabled = currentPage === 0;
+      document.getElementById('nextButton').disabled = showing >= totalQuotes;
+    }
+
+    // View quote details
+    window.viewQuote = function(quoteId) {
+      const quote = quotes.find(q => q.id === quoteId);
+      if (!quote) return;
+
+      const modal = document.getElementById('quoteModal');
+      const details = document.getElementById('quoteDetails');
+
+      details.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Customer Information</h3>
+            <dl class="space-y-2">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Full Name</dt>
+                <dd class="text-sm text-gray-900">${escapeHtml(quote.full_name)}</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Email</dt>
+                <dd class="text-sm text-gray-900">${escapeHtml(quote.email)}</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Phone</dt>
+                <dd class="text-sm text-gray-900">${escapeHtml(quote.phone)}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Quote Details</h3>
+            <dl class="space-y-2">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Design Type</dt>
+                <dd class="text-sm text-gray-900">${escapeHtml(quote.design_type)}</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Stones</dt>
+                <dd class="text-sm text-gray-900">${escapeHtml(quote.stones)}</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Metal</dt>
+                <dd class="text-sm text-gray-900">${escapeHtml(quote.metal)}</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Delivery</dt>
+                <dd class="text-sm text-gray-900">${escapeHtml(quote.delivery)}</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Add Render</dt>
+                <dd class="text-sm text-gray-900">${quote.add_render ? 'Yes' : 'No'}${quote.render_tones ? ` (${quote.render_tones} tone${quote.render_tones > 1 ? 's' : ''})` : ''}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Pricing</h3>
+            <dl class="space-y-2">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Price Range</dt>
+                <dd class="text-sm text-gray-900">$${quote.price_min} - $${quote.price_max}</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Deposit Amount</dt>
+                <dd class="text-sm text-gray-900">$${quote.deposit_amount}</dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Created At</dt>
+                <dd class="text-sm text-gray-900">${new Date(quote.created_at).toLocaleString()}</dd>
+              </div>
+              ${quote.updated_at ? `
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Updated At</dt>
+                <dd class="text-sm text-gray-900">${new Date(quote.updated_at).toLocaleString()}</dd>
+              </div>
+              ` : ''}
+            </dl>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Status & Notes</h3>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <select id="editStatus" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                <option value="pending" ${quote.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="paid" ${quote.status === 'paid' ? 'selected' : ''}>Paid</option>
+                <option value="completed" ${quote.status === 'completed' ? 'selected' : ''}>Completed</option>
+                <option value="cancelled" ${quote.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Admin Notes</label>
+              <textarea id="editNotes" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2">${escapeHtml(quote.admin_notes || '')}</textarea>
+            </div>
+            <button onclick="updateQuote('${quote.id}')" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+              Update Quote
+            </button>
+          </div>
+
+          ${quote.image_path ? `
+          <div class="md:col-span-2">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Reference Image</h3>
+            <button onclick="viewImage('${quote.id}')" class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+              View / Download Image
+            </button>
+            <div id="imagePreview-${quote.id}" class="mt-4 hidden">
+              <img src="" alt="Reference Image" class="max-w-full rounded-lg shadow-lg" />
+            </div>
+          </div>
+          ` : ''}
+        </div>
+      `;
+
+      modal.classList.add('active');
+    };
+
+    // Update quote
+    window.updateQuote = async function(quoteId) {
+      const status = document.getElementById('editStatus').value;
+      const adminNotes = document.getElementById('editNotes').value;
+
+      try {
+        const response = await fetch(`${API_BASE}/admin-update-quote`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentToken}`,
+          },
+          body: JSON.stringify({
+            quoteId,
+            status,
+            adminNotes,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to update quote');
+        }
+
+        alert('Quote updated successfully!');
+        document.getElementById('quoteModal').classList.remove('active');
+        loadQuotes();
+      } catch (error) {
+        console.error('Error updating quote:', error);
+        alert('Failed to update quote: ' + error.message);
+      }
+    };
+
+    // View image
+    window.viewImage = async function(quoteId) {
+      try {
+        const response = await fetch(`${API_BASE}/admin-signed-image-url`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentToken}`,
+          },
+          body: JSON.stringify({ quoteId }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to get image URL');
+        }
+
+        const data = await response.json();
+        
+        // Open image in new tab
+        window.open(data.signedUrl, '_blank');
+        
+        // Also show in modal
+        const preview = document.getElementById(`imagePreview-${quoteId}`);
+        if (preview) {
+          const img = preview.querySelector('img');
+          img.src = data.signedUrl;
+          preview.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Error loading image:', error);
+        alert('Failed to load image: ' + error.message);
+      }
+    };
+
+    // Utility functions
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function getStatusClass(status) {
+      const classes = {
+        pending: 'bg-yellow-100 text-yellow-800',
+        paid: 'bg-blue-100 text-blue-800',
+        completed: 'bg-green-100 text-green-800',
+        cancelled: 'bg-red-100 text-red-800',
+      };
+      return classes[status] || 'bg-gray-100 text-gray-800';
+    }
+  </script>
+</body>
+</html>
