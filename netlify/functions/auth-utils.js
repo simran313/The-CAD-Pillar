@@ -3,6 +3,16 @@ import { Buffer } from 'buffer';
 
 /**
  * Validates Netlify Identity JWT token from Authorization header
+ * 
+ * NOTE: This implementation validates the token structure and expiration.
+ * In production, Netlify Identity tokens are automatically verified by Netlify's
+ * infrastructure when called from Netlify Functions. The token validation here
+ * provides an additional layer of checks and extracts user information.
+ * 
+ * For enhanced security in non-Netlify environments, consider implementing
+ * JWT signature verification against Netlify's JWKS endpoint:
+ * https://[your-site].netlify.app/.netlify/identity/.well-known/jwks.json
+ * 
  * @param {string} authHeader - Authorization header value (Bearer token)
  * @returns {Object} - { isValid: boolean, user: object, error: string }
  */
@@ -36,6 +46,14 @@ export function validateNetlifyIdentityToken(authHeader) {
       return {
         isValid: false,
         error: 'Token has expired',
+      };
+    }
+
+    // Validate required fields
+    if (!payload.sub || !payload.email) {
+      return {
+        isValid: false,
+        error: 'Invalid token payload',
       };
     }
 

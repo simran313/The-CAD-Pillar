@@ -411,7 +411,7 @@
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium text-gray-700 mb-2">Admin Notes</label>
-              <textarea id="editNotes" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2">${escapeHtml(quote.admin_notes || '')}</textarea>
+              <textarea id="editNotes-${quote.id}" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
             </div>
             <button onclick="updateQuote('${quote.id}')" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
               Update Quote
@@ -433,12 +433,18 @@
       `;
 
       modal.classList.add('active');
+      
+      // Set textarea value safely to avoid XSS
+      const notesTextarea = document.getElementById(`editNotes-${quote.id}`);
+      if (notesTextarea) {
+        notesTextarea.value = quote.admin_notes || '';
+      }
     };
 
     // Update quote
     window.updateQuote = async function(quoteId) {
       const status = document.getElementById('editStatus').value;
-      const adminNotes = document.getElementById('editNotes').value;
+      const adminNotes = document.getElementById(`editNotes-${quoteId}`).value;
 
       try {
         const response = await fetch(`${API_BASE}/admin-update-quote`, {

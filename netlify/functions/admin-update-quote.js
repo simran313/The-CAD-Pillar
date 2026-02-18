@@ -34,7 +34,18 @@ export async function handler(event) {
   }
 
   try {
-    const { quoteId, status, adminNotes } = JSON.parse(event.body);
+    let body;
+    try {
+      body = JSON.parse(event.body);
+    } catch (parseError) {
+      return {
+        statusCode: 400,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ error: 'Invalid JSON in request body' }),
+      };
+    }
+
+    const { quoteId, status, adminNotes } = body;
 
     if (!quoteId) {
       return {
