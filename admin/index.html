@@ -402,7 +402,7 @@
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Status & Notes</h3>
             <div class="mb-4">
               <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <select id="editStatus" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+              <select id="editStatus-${quote.id}" class="w-full border border-gray-300 rounded-lg px-3 py-2">
                 <option value="pending" ${quote.status === 'pending' ? 'selected' : ''}>Pending</option>
                 <option value="paid" ${quote.status === 'paid' ? 'selected' : ''}>Paid</option>
                 <option value="completed" ${quote.status === 'completed' ? 'selected' : ''}>Completed</option>
@@ -413,6 +413,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">Admin Notes</label>
               <textarea id="editNotes-${quote.id}" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2"></textarea>
             </div>
+            <div id="updateMessage-${quote.id}" class="mb-4 hidden"></div>
             <button onclick="updateQuote('${quote.id}')" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
               Update Quote
             </button>
@@ -424,8 +425,10 @@
             <button onclick="viewImage('${quote.id}')" class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
               View / Download Image
             </button>
+            <div id="imageMessage-${quote.id}" class="mt-4 hidden"></div>
             <div id="imagePreview-${quote.id}" class="mt-4 hidden">
               <img src="" alt="Reference Image" class="max-w-full rounded-lg shadow-lg" />
+            </div>
             </div>
           </div>
           ` : ''}
@@ -443,10 +446,16 @@
 
     // Update quote
     window.updateQuote = async function(quoteId) {
-      const status = document.getElementById('editStatus').value;
+      const status = document.getElementById(`editStatus-${quoteId}`).value;
       const adminNotes = document.getElementById(`editNotes-${quoteId}`).value;
+      const messageDiv = document.getElementById(`updateMessage-${quoteId}`);
 
       try {
+        // Show loading state
+        messageDiv.className = 'mb-4 p-3 bg-blue-50 text-blue-700 rounded-lg';
+        messageDiv.textContent = 'Updating quote...';
+        messageDiv.classList.remove('hidden');
+
         const response = await fetch(`${API_BASE}/admin-update-quote`, {
           method: 'PATCH',
           headers: {
@@ -465,18 +474,34 @@
           throw new Error(error.error || 'Failed to update quote');
         }
 
-        alert('Quote updated successfully!');
-        document.getElementById('quoteModal').classList.remove('active');
-        loadQuotes();
+        // Show success message
+        messageDiv.className = 'mb-4 p-3 bg-green-50 text-green-700 rounded-lg';
+        messageDiv.textContent = '✓ Quote updated successfully!';
+        
+        // Refresh the list and close modal after a short delay
+        setTimeout(() => {
+          document.getElementById('quoteModal').classList.remove('active');
+          loadQuotes();
+        }, 1000);
       } catch (error) {
         console.error('Error updating quote:', error);
-        alert('Failed to update quote: ' + error.message);
+        // Show error message
+        messageDiv.className = 'mb-4 p-3 bg-red-50 text-red-700 rounded-lg';
+        messageDiv.textContent = '✗ Failed to update quote: ' + error.message;
+        messageDiv.classList.remove('hidden');
       }
     };
 
     // View image
     window.viewImage = async function(quoteId) {
+      const messageDiv = document.getElementById(`imageMessage-${quoteId}`);
+      
       try {
+        // Show loading state
+        messageDiv.className = 'mt-4 p-3 bg-blue-50 text-blue-700 rounded-lg';
+        messageDiv.textContent = 'Loading image...';
+        messageDiv.classList.remove('hidden');
+
         const response = await fetch(`${API_BASE}/admin-signed-image-url`, {
           method: 'POST',
           headers: {
@@ -493,6 +518,9 @@
 
         const data = await response.json();
         
+        // Hide loading message
+        messageDiv.classList.add('hidden');
+        
         // Open image in new tab
         window.open(data.signedUrl, '_blank');
         
@@ -505,7 +533,10 @@
         }
       } catch (error) {
         console.error('Error loading image:', error);
-        alert('Failed to load image: ' + error.message);
+        // Show error message
+        messageDiv.className = 'mt-4 p-3 bg-red-50 text-red-700 rounded-lg';
+        messageDiv.textContent = '✗ Failed to load image: ' + error.message;
+        messageDiv.classList.remove('hidden');
       }
     };
 

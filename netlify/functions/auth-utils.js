@@ -61,6 +61,7 @@ export function validateNetlifyIdentityToken(authHeader) {
     const user = {
       id: payload.sub,
       email: payload.email,
+      // Reserved for future role-based access control
       role: payload.app_metadata?.roles?.[0] || 'user',
     };
 
