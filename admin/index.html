@@ -592,8 +592,10 @@
     window.netlifyIdentity.init();
 
     const hash = window.location.hash || "";
-    if (hash.includes("recovery_token") || hash.includes("invite_token")) {
-      window.netlifyIdentity.open();
+    if (hash.includes("recovery_token")) {
+      window.netlifyIdentity.open("recovery");
+    } else if (hash.includes("invite_token")) {
+      window.netlifyIdentity.open("signup");
     }
   }
 </script></body>
