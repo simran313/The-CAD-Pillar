@@ -557,6 +557,21 @@
       };
       return classes[status] || 'bg-gray-100 text-gray-800';
     }
+    </script>
+
+  <!-- Netlify Identity (required so #recovery_token / #invite_token links work) -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.init();
+
+      // If user arrived from an email link (#recovery_token / #invite_token),
+      // open the widget so they can set a password.
+      const hash = window.location.hash || "";
+      if (hash.includes("recovery_token") || hash.includes("invite_token")) {
+        window.netlifyIdentity.open();
+      }
+    }
   </script>
 </body>
 </html>
