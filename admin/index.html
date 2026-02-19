@@ -570,45 +570,22 @@
     }
     </script>
 
-  <!-- Netlify Identity (required so #recovery_token / #invite_token links work) -->
+   <!-- Netlify Identity (required so #recovery_token / #invite_token links work) -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <script>
     if (window.netlifyIdentity) {
       window.netlifyIdentity.init();
 
-      // If user arrived from an email link (#recovery_token / #invite_token),
-      // open the widget so they can set a password.
       const hash = window.location.hash || "";
-      if (hash.includes("recovery_token") || hash.includes("invite_token")) {
-        window.netlifyIdentity.open();
+
+      // Force correct screen from email links
+      if (hash.includes("recovery_token=")) {
+        window.netlifyIdentity.open("recovery");
+      } else if (hash.includes("invite_token=") || hash.includes("confirmation_token=")) {
+        window.netlifyIdentity.open("signup");
       }
     }
-    
   </script>
-<!-- Netlify Identity recovery/invite handler for links that land on / -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.init();
-
-    const hash = window.location.hash || "";
-    if (hash.includes("recovery_token")) {
-      window.netlifyIdentity.open("recovery");
-    } else if (hash.includes("invite_token")) {
-      window.netlifyIdentity.open("signup");
-    }
-  }
-</script><script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.init();
-
-    const hash = window.location.hash || "";
-    if (hash.includes("recovery_token")) {
-      window.netlifyIdentity.open("recovery");
-    } else if (hash.includes("invite_token")) {
-      window.netlifyIdentity.open("signup");
-    }
-  }
-</script></body>
+</body>
+</html></body>
 </html>
