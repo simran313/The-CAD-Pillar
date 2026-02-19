@@ -1592,11 +1592,11 @@
 <script>
   if (window.netlifyIdentity) {
     window.netlifyIdentity.init();
-
     const hash = window.location.hash || "";
-    if (hash.includes("recovery_token")) {
+
+    if (hash.includes("recovery_token=")) {
       window.netlifyIdentity.open("recovery");
-    } else if (hash.includes("invite_token")) {
+    } else if (hash.includes("invite_token=") || hash.includes("confirmation_token=")) {
       window.netlifyIdentity.open("signup");
     }
   }
