@@ -77,6 +77,8 @@ export async function handler(event) {
       addRender,
       renderTones,
       imageBase64,
+      aiPriceMin,
+      aiPriceMax,
     } = JSON.parse(event.body);
 
     // Validate required fields
@@ -117,13 +119,22 @@ export async function handler(event) {
       };
     }
 
-    // Calculate price server-side
-    const { priceMin, priceMax } = calculateQuotePrice({
-      designType,
-      stones,
-      addRender: Boolean(addRender),
-      renderTones: renderTones ? parseInt(renderTones, 10) : null,
-    });
+    // Use AI-computed price if provided, otherwise fall back to table pricing
+    let priceMin, priceMax;
+    if (
+      typeof aiPriceMin === 'number' && aiPriceMin > 0 &&
+      typeof aiPriceMax === 'number' && aiPriceMax > 0
+    ) {
+      priceMin = Math.round(aiPriceMin);
+      priceMax = Math.round(aiPriceMax);
+    } else {
+      ({ priceMin, priceMax } = calculateQuotePrice({
+        designType,
+        stones,
+        addRender: Boolean(addRender),
+        renderTones: renderTones ? parseInt(renderTones, 10) : null,
+      }));
+    }
 
     // Calculate deposit (50% of max price)
     const depositAmount = Math.round(priceMax * 0.5);

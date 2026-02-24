@@ -1337,6 +1337,31 @@
             });
           }
 
+          // Call analyze-design first if an image is present
+          let aiPriceMin = null;
+          let aiPriceMax = null;
+          if (imageBase64) {
+            try {
+              const aiResponse = await fetch('/.netlify/functions/analyze-design', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  imageBase64,
+                  category: calculatorState.designType,
+                }),
+              });
+              if (aiResponse.ok) {
+                const aiData = await aiResponse.json();
+                if (aiData.success && aiData.priceMin && aiData.priceMax) {
+                  aiPriceMin = aiData.priceMin;
+                  aiPriceMax = aiData.priceMax;
+                }
+              }
+            } catch (aiError) {
+              console.warn('AI analysis failed, falling back to table pricing:', aiError);
+            }
+          }
+
           const response = await fetch('/.netlify/functions/submit-quote', {
             method: 'POST',
             headers: {
@@ -1353,11 +1378,13 @@
               addRender: calculatorState.addRender,
               renderTones: calculatorState.renderTones,
               imageBase64,
+              aiPriceMin,
+              aiPriceMax,
             }),
           });
 
           const data = await response.json();
-          
+
           if (!response.ok) {
             throw new Error(data.error || 'Failed to submit quote');
           }
