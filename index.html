@@ -1124,7 +1124,9 @@
         estimatedPriceMax: 0,
         depositAmount: 0,
         paypalBusinessEmail: '',
-        isOtpVerified: false
+        isOtpVerified: false,
+        aiPriceMin: null,
+        aiPriceMax: null,
       };
       
       const elements = {
@@ -1187,24 +1189,41 @@
       }
       
       function updatePriceDisplay() {
-        const totals = calculateTotalPrice();
         const cadPrice = calculateCADPrice();
-        
-        calculatorState.estimatedPriceMin = totals.min;
-        calculatorState.estimatedPriceMax = totals.max;
-        
+
+        // Prefer AI-computed price if available
+        let totalMin = (calculatorState.aiPriceMin != null) ? calculatorState.aiPriceMin : cadPrice.min;
+        let totalMax = (calculatorState.aiPriceMax != null) ? calculatorState.aiPriceMax : cadPrice.max;
+
+        // Add render add-on on top of base price
+        if (calculatorState.addRender && calculatorState.renderTones) {
+          const renderPrice = renderPrices[calculatorState.renderTones];
+          totalMin += renderPrice;
+          totalMax += renderPrice;
+        }
+
+        calculatorState.estimatedPriceMin = totalMin;
+        calculatorState.estimatedPriceMax = totalMax;
+
         // Don't show actual prices until OTP is verified
         if (!calculatorState.isOtpVerified) {
           elements.priceOutput.textContent = 'Verify email to see price';
           elements.priceBreakdown.textContent = '';
         } else {
-          elements.priceOutput.textContent = `$${totals.min} - $${totals.max}`;
-          
+          elements.priceOutput.textContent = `£${totalMin} - £${totalMax}`;
+
           let breakdown = '';
-          if (calculatorState.addRender && calculatorState.renderTones) {
-            breakdown = `Approx. CAD: $${cadPrice.min}-$${cadPrice.max} + Renders: $${renderPrices[calculatorState.renderTones]}`;
+          if (calculatorState.aiPriceMin != null) {
+            breakdown = `AI-analysed price`;
+            if (calculatorState.addRender && calculatorState.renderTones) {
+              breakdown += ` + Renders: £${renderPrices[calculatorState.renderTones]}`;
+            }
           } else {
-            breakdown = `Approx. CAD Design`;
+            if (calculatorState.addRender && calculatorState.renderTones) {
+              breakdown = `Approx. CAD: £${cadPrice.min}-£${cadPrice.max} + Renders: £${renderPrices[calculatorState.renderTones]}`;
+            } else {
+              breakdown = 'Approx. CAD Design';
+            }
           }
           elements.priceBreakdown.textContent = breakdown;
         }
@@ -1312,6 +1331,34 @@
         }
       }
 
+      async function analyzeDesign(imageFile, designType) {
+        try {
+          const imageBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(imageFile);
+          });
+
+          const response = await fetch('/.netlify/functions/analyze-design', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageBase64, category: designType }),
+          });
+
+          if (!response.ok) return { success: false };
+
+          const data = await response.json();
+          if (data.success && data.priceMin && data.priceMax) {
+            return { success: true, priceMin: data.priceMin, priceMax: data.priceMax, reasoning: data.reasoning };
+          }
+          return { success: false };
+        } catch (err) {
+          console.warn('AI analysis failed:', err);
+          return { success: false };
+        }
+      }
+
       async function submitQuote() {
         try {
           // Convert image to base64
@@ -1323,31 +1370,6 @@
               reader.onerror = reject;
               reader.readAsDataURL(calculatorState.imageFile);
             });
-          }
-
-          // Call analyze-design first if an image is present
-          let aiPriceMin = null;
-          let aiPriceMax = null;
-          if (imageBase64) {
-            try {
-              const aiResponse = await fetch('/.netlify/functions/analyze-design', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  imageBase64,
-                  category: calculatorState.designType,
-                }),
-              });
-              if (aiResponse.ok) {
-                const aiData = await aiResponse.json();
-                if (aiData.success && aiData.priceMin && aiData.priceMax) {
-                  aiPriceMin = aiData.priceMin;
-                  aiPriceMax = aiData.priceMax;
-                }
-              }
-            } catch (aiError) {
-              console.warn('AI analysis failed, falling back to table pricing:', aiError);
-            }
           }
 
           const response = await fetch('/.netlify/functions/submit-quote', {
@@ -1365,8 +1387,8 @@
               addRender: calculatorState.addRender,
               renderTones: calculatorState.renderTones,
               imageBase64,
-              aiPriceMin,
-              aiPriceMax,
+              aiPriceMin: calculatorState.aiPriceMin,
+              aiPriceMax: calculatorState.aiPriceMax,
             }),
           });
 
@@ -1438,21 +1460,31 @@
           calculatorState.email = elements.emailInput.value.trim();
           calculatorState.phone = elements.phoneInput.value.trim();
           calculatorState.imageFile = elements.imageInput.files[0];
-          
-          // Disable button while sending
+
+          // Disable button while analysing and sending
           elements.submitDetailsBtn.disabled = true;
-          elements.submitDetailsBtn.textContent = 'Sending OTP...';
-          
-          const result = await sendOTP(calculatorState.email);
-          
+          elements.submitDetailsBtn.textContent = 'Analysing & Sending OTP...';
+
+          const [aiResult, otpResult] = await Promise.all([
+            calculatorState.imageFile
+              ? analyzeDesign(calculatorState.imageFile, calculatorState.designType)
+              : Promise.resolve({ success: false }),
+            sendOTP(calculatorState.email),
+          ]);
+
+          if (aiResult.success) {
+            calculatorState.aiPriceMin = aiResult.priceMin;
+            calculatorState.aiPriceMax = aiResult.priceMax;
+          }
+
           // Re-enable button
           elements.submitDetailsBtn.disabled = false;
           elements.submitDetailsBtn.textContent = 'Send OTP';
-          
-          if (result.success) {
+
+          if (otpResult.success) {
             showStep('otp');
           } else {
-            elements.validationError.textContent = result.error || 'Failed to send OTP. Please try again.';
+            elements.validationError.textContent = otpResult.error || 'Failed to send OTP. Please try again.';
             elements.validationError.classList.add('show');
           }
         }
@@ -1497,8 +1529,8 @@
             calculatorState.paypalBusinessEmail = quoteResult.data.paypalBusinessEmail;
             
             // Update payment display
-            elements.finalPrice.textContent = `$${quoteResult.data.priceMin} - $${quoteResult.data.priceMax}`;
-            elements.finalDeposit.textContent = `$${quoteResult.data.depositAmount}`;
+            elements.finalPrice.textContent = `£${quoteResult.data.priceMin} - £${quoteResult.data.priceMax}`;
+            elements.finalDeposit.textContent = `£${quoteResult.data.depositAmount}`;
             elements.finalEmail.textContent = calculatorState.email;
             
             showStep('payment');
@@ -1573,7 +1605,9 @@
           estimatedPriceMax: 0,
           depositAmount: 0,
           paypalBusinessEmail: '',
-          isOtpVerified: false
+          isOtpVerified: false,
+          aiPriceMin: null,
+          aiPriceMax: null,
         };
         
         elements.designTypeSelect.value = '';
