@@ -21,11 +21,20 @@ const PRICE_RANGES = {
 // Render add-on prices
 const RENDER_PRICES = { 1: 50, 3: 70 };
 
+// Minimum floor prices — the AI can never quote below these regardless of complexity score
+const PRICE_FLOORS = {
+  ring:      60,
+  pendant:   70,
+  bracelet:  65,
+  earrings:  55,
+  custom:    60,
+};
+
 // How wide the min-max gap is, based on complexity
 function getPriceGap(score) {
-  if (score <= 40) return 8;
-  if (score <= 70) return 12;
-  return 18;
+  if (score <= 40) return 15;
+  if (score <= 70) return 25;
+  return 35;
 }
 
 function getComplexityLabel(score) {
@@ -42,7 +51,10 @@ function calculatePrice(category, complexityScore, addRender, renderTones) {
   const position = (complexityScore / 100) * spread;
   const gap = getPriceGap(complexityScore);
 
-  let priceMin = Math.round(range.min + position);
+  let priceMin = Math.max(
+    Math.round(range.min + position),
+    PRICE_FLOORS[category]
+  );
   let priceMax = Math.min(priceMin + gap, range.max);
 
   if (addRender && renderTones && RENDER_PRICES[renderTones]) {
@@ -95,6 +107,8 @@ async function analyzeWithGPT4o(customerImageBase64, referenceImages, category, 
     'number of design elements, stone setting complexity, filigree/engraving work, ' +
     'structural complexity, and fine surface details. ' +
     '0 = simplest possible design, 100 = most complex design possible. ' +
+    'When in doubt, score higher rather than lower — under-pricing is worse than over-pricing for this business. ' +
+    'A score below 30 should only be used for truly minimal, plain designs with absolutely no stone settings, engraving, or structural complexity. ' +
     'Return ONLY valid JSON in this exact format: ' +
     '{"complexity_score":<integer 0-100>,"complexity_label":"simple|medium|complex","confidence":<integer 0-100>,"reasoning":"<1-2 sentences>"}';
 
