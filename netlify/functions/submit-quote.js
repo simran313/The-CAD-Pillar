@@ -13,30 +13,22 @@ const priceRanges = {
   custom: { min: 50, max: 65 },
 };
 
-const stoneMultipliers = {
-  '0-10': 1.0,
-  '10-50': 1.2,
-  '50-100': 1.4,
-  '100+': 1.6,
-};
-
 const renderPrices = {
   1: 50,
   3: 70,
 };
 
 function calculateQuotePrice(quoteData) {
-  const { designType, stones, addRender, renderTones } = quoteData;
+  const { designType, addRender, renderTones } = quoteData;
   
-  if (!designType || !stones || !priceRanges[designType] || !stoneMultipliers[stones]) {
-    throw new Error('Invalid design type or stones selection');
+  if (!designType || !priceRanges[designType]) {
+    throw new Error('Invalid design type');
   }
 
   const range = priceRanges[designType];
-  const stoneMult = stoneMultipliers[stones];
 
-  let priceMin = Math.round(range.min * stoneMult);
-  let priceMax = Math.round(range.max * stoneMult);
+  let priceMin = range.min;
+  let priceMax = range.max;
 
   if (addRender && renderTones && renderPrices[renderTones]) {
     const renderPrice = renderPrices[renderTones];
@@ -71,7 +63,6 @@ export async function handler(event) {
       fullName,
       phone,
       designType,
-      stones,
       metal,
       delivery,
       addRender,
@@ -82,7 +73,7 @@ export async function handler(event) {
     } = JSON.parse(event.body);
 
     // Validate required fields
-    if (!email || !fullName || !phone || !designType || !stones || !metal || !delivery) {
+    if (!email || !fullName || !phone || !designType || !metal || !delivery) {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
@@ -130,7 +121,6 @@ export async function handler(event) {
     } else {
       ({ priceMin, priceMax } = calculateQuotePrice({
         designType,
-        stones,
         addRender: Boolean(addRender),
         renderTones: renderTones ? parseInt(renderTones, 10) : null,
       }));
@@ -199,7 +189,6 @@ export async function handler(event) {
       full_name: fullName,
       phone,
       design_type: designType,
-      stones,
       metal,
       delivery,
       add_render: Boolean(addRender),
