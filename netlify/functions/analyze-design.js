@@ -9,12 +9,12 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-// Price ranges per category (£)
+// Price ranges per category (USD)
 const PRICE_RANGES = {
-  ring:      { min: 30,  max: 150 },
-  bracelet:  { min: 45,  max: 160 },
+  ring:      { min: 35,  max: 140 },
   pendant:   { min: 45,  max: 180 },
-  earrings:  { min: 35,  max: 140 },
+  bracelet:  { min: 40,  max: 140 },
+  earrings:  { min: 40,  max: 120 },
   custom:    { min: 40,  max: 170 },
 };
 
