@@ -438,8 +438,6 @@
           <h3 class="cad-calculator-title">Quick Quote</h3>
           <p class="cad-calculator-subtitle">Tell us about your design</p><!-- Design Type -->
           <div class="cad-form-group"><label for="design-type" class="cad-label">Design Type</label> <select id="design-type" class="cad-select"> <option value="">Select design type</option> <option value="ring">Ring</option> <option value="pendant">Pendant / Necklace</option> <option value="bracelet">Bracelet</option> <option value="earrings">Earrings</option> <option value="custom">Custom</option> </select>
-          </div><!-- Number of Stones -->
-          <div class="cad-form-group"><label for="stones" class="cad-label">Number of Stones</label> <select id="stones" class="cad-select"> <option value="">Select stone count</option> <option value="0-10">1-10 Stones</option> <option value="10-50">10-50 Stones</option> <option value="50-100">50-100 Stones</option> <option value="100+">100+ Stones</option> </select>
           </div><!-- Metal Type & Tone -->
           <div class="cad-form-group"><label for="metal" class="cad-label">Metal Type &amp; Tone</label> <select id="metal" class="cad-select"> <option value="">Select metal tone</option> <option value="white-gold">White Gold</option> <option value="yellow-gold">Yellow Gold</option> <option value="rose-gold">Rose Gold</option> <option value="platinum">Platinum</option> </select>
           </div><!-- Delivery Speed -->
@@ -1107,13 +1105,6 @@
         custom: { min: 50, max: 65 }
       };
       
-      const stoneMultipliers = {
-        '0-10': 1.0,
-        '10-50': 1.2,
-        '50-100': 1.4,
-        '100+': 1.6
-      };
-      
       const renderPrices = {
         1: 50,
         3: 70
@@ -1121,7 +1112,6 @@
       
       let calculatorState = {
         designType: '',
-        stones: '',
         metal: '',
         delivery: 'standard',
         addRender: false,
@@ -1139,7 +1129,6 @@
       
       const elements = {
         designTypeSelect: document.getElementById('design-type'),
-        stonesSelect: document.getElementById('stones'),
         metalSelect: document.getElementById('metal'),
         deliverySelect: document.getElementById('delivery'),
         addRenderCheckbox: document.getElementById('add-render'),
@@ -1172,15 +1161,14 @@
       };
       
       function calculateCADPrice() {
-        const { designType, stones } = calculatorState;
-        if (!designType || !stones) return { min: 0, max: 0 };
+        const { designType } = calculatorState;
+        if (!designType) return { min: 0, max: 0 };
         
         const range = priceRanges[designType];
-        const stoneMult = stoneMultipliers[stones];
         
         return {
-          min: Math.round(range.min * stoneMult),
-          max: Math.round(range.max * stoneMult)
+          min: range.min,
+          max: range.max
         };
       }
       
@@ -1372,7 +1360,6 @@
               fullName: calculatorState.fullName,
               phone: calculatorState.phone,
               designType: calculatorState.designType,
-              stones: calculatorState.stones,
               metal: calculatorState.metal,
               delivery: calculatorState.delivery,
               addRender: calculatorState.addRender,
@@ -1410,11 +1397,6 @@
         updatePriceDisplay();
       });
       
-      elements.stonesSelect.addEventListener('change', (e) => {
-        calculatorState.stones = e.target.value;
-        updatePriceDisplay();
-      });
-      
       elements.metalSelect.addEventListener('change', (e) => {
         calculatorState.metal = e.target.value;
         updatePriceDisplay();
@@ -1441,7 +1423,7 @@
       });
       
       elements.proceedBtn.addEventListener('click', () => {
-        if (calculatorState.designType && calculatorState.stones && calculatorState.metal) {
+        if (calculatorState.designType && calculatorState.metal) {
           showStep('details');
         }
       });
@@ -1579,7 +1561,6 @@
         e.preventDefault();
         calculatorState = {
           designType: '',
-          stones: '',
           metal: '',
           delivery: 'standard',
           addRender: false,
@@ -1596,7 +1577,6 @@
         };
         
         elements.designTypeSelect.value = '';
-        elements.stonesSelect.value = '';
         elements.metalSelect.value = '';
         elements.deliverySelect.value = 'standard';
         elements.addRenderCheckbox.checked = false;
