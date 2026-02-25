@@ -1120,6 +1120,7 @@
         email: '',
         phone: '',
         imageFile: null,
+        imageBase64: null,
         estimatedPriceMin: 0,
         estimatedPriceMax: 0,
         depositAmount: 0,
@@ -1189,44 +1190,35 @@
       }
       
       function updatePriceDisplay() {
-        const cadPrice = calculateCADPrice();
+        const cadPrice = calculateCADPrice();   // flat table, always available
+        const totals   = calculateTotalPrice(); // flat table + render add-on
 
-        // Prefer AI-computed price if available
-        let totalMin = (calculatorState.aiPriceMin != null) ? calculatorState.aiPriceMin : cadPrice.min;
-        let totalMax = (calculatorState.aiPriceMax != null) ? calculatorState.aiPriceMax : cadPrice.max;
+        calculatorState.estimatedPriceMin = totals.min;
+        calculatorState.estimatedPriceMax = totals.max;
 
-        // Add render add-on on top of base price
-        if (calculatorState.addRender && calculatorState.renderTones) {
-          const renderPrice = renderPrices[calculatorState.renderTones];
-          totalMin += renderPrice;
-          totalMax += renderPrice;
-        }
-
-        calculatorState.estimatedPriceMin = totalMin;
-        calculatorState.estimatedPriceMax = totalMax;
-
-        // Don't show actual prices until OTP is verified
         if (!calculatorState.isOtpVerified) {
-          elements.priceOutput.textContent = 'Verify email to see price';
+          elements.priceOutput.textContent    = 'Verify email to see price';
           elements.priceBreakdown.textContent = '';
-        } else {
-          elements.priceOutput.textContent = `£${totalMin} - £${totalMax}`;
-
-          let breakdown = '';
-          if (calculatorState.aiPriceMin != null) {
-            breakdown = `AI-analysed price`;
-            if (calculatorState.addRender && calculatorState.renderTones) {
-              breakdown += ` + Renders: £${renderPrices[calculatorState.renderTones]}`;
-            }
-          } else {
-            if (calculatorState.addRender && calculatorState.renderTones) {
-              breakdown = `Approx. CAD: £${cadPrice.min}-£${cadPrice.max} + Renders: £${renderPrices[calculatorState.renderTones]}`;
-            } else {
-              breakdown = 'Approx. CAD Design';
-            }
-          }
-          elements.priceBreakdown.textContent = breakdown;
+          return;
         }
+
+        // Use AI prices if available, otherwise fall back to flat table
+        const displayMin = calculatorState.aiPriceMin ?? totals.min;
+        const displayMax = calculatorState.aiPriceMax ?? totals.max;
+
+        elements.priceOutput.textContent = `£${displayMin} - £${displayMax}`;
+
+        let breakdown = '';
+        if (calculatorState.addRender && calculatorState.renderTones) {
+          breakdown = calculatorState.aiPriceMin
+            ? `AI-analysed price (incl. renders)`
+            : `Approx. CAD: £${cadPrice.min}-£${cadPrice.max} + Renders: £${renderPrices[calculatorState.renderTones]}`;
+        } else {
+          breakdown = calculatorState.aiPriceMin
+            ? `AI-analysed complexity price`
+            : `Approx. CAD Design`;
+        }
+        elements.priceBreakdown.textContent = breakdown;
       }
       
       function showStep(stepName) {
@@ -1331,46 +1323,35 @@
         }
       }
 
-      async function analyzeDesign(imageFile, designType) {
+      async function analyzeDesign(imageBase64, category) {
         try {
-          const imageBase64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(imageFile);
-          });
-
           const response = await fetch('/.netlify/functions/analyze-design', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageBase64, category: designType }),
+            body: JSON.stringify({
+              imageBase64,
+              category,
+              addRender: calculatorState.addRender,
+              renderTones: calculatorState.renderTones || null,
+            }),
           });
-
-          if (!response.ok) return { success: false };
-
           const data = await response.json();
-          if (data.success && data.priceMin && data.priceMax) {
-            return { success: true, priceMin: data.priceMin, priceMax: data.priceMax, reasoning: data.reasoning };
-          }
-          return { success: false };
+          if (!response.ok || !data.success) return { success: false };
+          return {
+            success: true,
+            priceMin: data.priceMin,
+            priceMax: data.priceMax,
+            depositAmount: data.depositAmount,
+          };
         } catch (err) {
-          console.warn('AI analysis failed:', err);
+          console.error('analyzeDesign error:', err);
           return { success: false };
         }
       }
 
       async function submitQuote() {
         try {
-          // Convert image to base64
-          let imageBase64 = null;
-          if (calculatorState.imageFile) {
-            imageBase64 = await new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = reject;
-              reader.readAsDataURL(calculatorState.imageFile);
-            });
-          }
+          const imageBase64 = calculatorState.imageBase64 || null;
 
           const response = await fetch('/.netlify/functions/submit-quote', {
             method: 'POST',
@@ -1457,24 +1438,38 @@
       elements.submitDetailsBtn.addEventListener('click', async () => {
         if (validateDetailsForm()) {
           calculatorState.fullName = elements.fullNameInput.value.trim();
-          calculatorState.email = elements.emailInput.value.trim();
-          calculatorState.phone = elements.phoneInput.value.trim();
+          calculatorState.email   = elements.emailInput.value.trim();
+          calculatorState.phone   = elements.phoneInput.value.trim();
           calculatorState.imageFile = elements.imageInput.files[0];
 
-          // Disable button while analysing and sending
           elements.submitDetailsBtn.disabled = true;
-          elements.submitDetailsBtn.textContent = 'Analysing & Sending OTP...';
+          elements.submitDetailsBtn.textContent = 'Sending OTP...';
 
-          const [aiResult, otpResult] = await Promise.all([
-            calculatorState.imageFile
-              ? analyzeDesign(calculatorState.imageFile, calculatorState.designType)
-              : Promise.resolve({ success: false }),
+          // Convert image to base64 once, reuse for both calls
+          let imageBase64 = null;
+          if (calculatorState.imageFile) {
+            imageBase64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload  = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(calculatorState.imageFile);
+            });
+            calculatorState.imageBase64 = imageBase64;
+          }
+
+          // Fire both in parallel — don't wait for AI before showing OTP step
+          const [otpResult, aiResult] = await Promise.all([
             sendOTP(calculatorState.email),
+            imageBase64
+              ? analyzeDesign(imageBase64, calculatorState.designType)
+              : Promise.resolve({ success: false }),
           ]);
 
+          // Store AI prices if we got them
           if (aiResult.success) {
-            calculatorState.aiPriceMin = aiResult.priceMin;
-            calculatorState.aiPriceMax = aiResult.priceMax;
+            calculatorState.aiPriceMin    = aiResult.priceMin;
+            calculatorState.aiPriceMax    = aiResult.priceMax;
+            calculatorState.depositAmount = aiResult.depositAmount;
           }
 
           // Re-enable button
@@ -1527,6 +1522,8 @@
             calculatorState.estimatedPriceMax = quoteResult.data.priceMax;
             calculatorState.depositAmount = quoteResult.data.depositAmount;
             calculatorState.paypalBusinessEmail = quoteResult.data.paypalBusinessEmail;
+
+            updatePriceDisplay(); // re-render Step 1 price display with AI result
             
             // Update payment display
             elements.finalPrice.textContent = `£${quoteResult.data.priceMin} - £${quoteResult.data.priceMax}`;
@@ -1601,6 +1598,7 @@
           email: '',
           phone: '',
           imageFile: null,
+          imageBase64: null,
           estimatedPriceMin: 0,
           estimatedPriceMax: 0,
           depositAmount: 0,
